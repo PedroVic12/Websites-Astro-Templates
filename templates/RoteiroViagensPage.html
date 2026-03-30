@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Explore mais - Roteiro Petrópolis</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Material UI (MUI v5) -->
+    <script crossorigin src="https://unpkg.com/@mui/material@5.14.20/umd/material-ui.production.min.js"></script>
+
+    <!-- Material Icons Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #121212;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .fade-enter {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .fade-enter-active {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- MÓDULO 1: DADOS E POO (Simulando data.js) -->
+    <script type="text/babel">
+        // Lógica de dados baseada no seu Markdown
+        class ItineraryData {
+            static getTripInfo() {
+                return {
+                    destination: "Petrópolis",
+                    origin: "Niterói",
+                    base: "Loft no Centro",
+                    logistics: {
+                        route: ["Ponte Rio-Niterói", "Linha Vermelha", "BR-040 (subida da serra)"],
+                        time: "1h30 a 2h",
+                        tips: ["Sair cedo (antes de 8h ou depois de 10h)", "Evitar pico na ponte", "Tanque cheio antes da serra"]
+                    }
+                };
+            }
+
+            static getDays() {
+                return [
+                    {
+                        day: 1,
+                        title: "Centro histórico (leve e estratégico)",
+                        focus: "Chegar + adaptação + caminhada",
+                        events: [
+                            { time: "Tarde", desc: "Museu Imperial, Palácio de Cristal, Catedral São Pedro de Alcântara", icon: "museum" },
+                            { time: "Noite", desc: "Jantar no centro, caminhada leve", icon: "restaurant" }
+                        ]
+                    },
+                    {
+                        day: 2,
+                        title: "Experiência completa (natureza + serra)",
+                        focus: "O carro faz diferença aqui",
+                        events: [
+                            { time: "Manhã", desc: "Parque Nacional da Serra dos Órgãos (trilha leve ou mirante)", icon: "landscape" },
+                            { time: "Almoço", desc: "Cervejaria Bohemia", icon: "sports_bar" },
+                            { time: "Tarde", desc: "Casa de Santos Dumont, ruas históricas + cafés", icon: "local_cafe" },
+                            { time: "Noite", desc: "Barzinho leve ou descanso", icon: "nightlife" }
+                        ]
+                    },
+                    {
+                        day: 3,
+                        title: "Chill + Retorno inteligente",
+                        focus: "Fechar sem pressa",
+                        events: [
+                            { time: "Manhã", desc: "Café tranquilo, comprar lembranças", icon: "shopping_bag" },
+                            { time: "Opcional", desc: "Quitandinha Palace", icon: "castle" },
+                            { time: "Retorno", desc: "Sair antes das 16h (evita trânsito)", icon: "directions_car" }
+                        ]
+                    }
+                ];
+            }
+
+            static getImages() {
+                return [
+                    "https://images.unsplash.com/photo-1590059533350-01053bb1082d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80", // Palacio de cristal/similar
+                    "https://images.unsplash.com/photo-1628178385038-f86a928926eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80", // Montanhas
+                    "https://images.unsplash.com/photo-1543884814-c48c34fbc875?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"  // Cerveja/Gastronomia
+                ];
+            }
+        }
+    </script>
+
+    <!-- MÓDULO 2: COMPONENTES (Simulando components.js) -->
+    <script type="text/babel">
+        const {
+            Box, Typography, Card, CardContent, CardMedia, Button,
+            IconButton, Stepper, Step, StepLabel, StepContent, Paper,
+            Snackbar, Alert, Chip, Divider, Grid
+        } = MaterialUI;
+        const { useState, useEffect } = React;
+
+        // --- COMPONENTE CARROSSEL ---
+        const HeroCarousel = ({ images }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCurrentIndex((prev) => (prev + 1) % images.length);
+                }, 5000);
+                return () => clearInterval(timer);
+            }, [images]);
+
+            return (
+                <Box sx={{ position: 'relative', height: '60vh', width: '100%', overflow: 'hidden' }}>
+                    {images.map((img, idx) => (
+                        <Box
+                            key={idx}
+                            sx={{
+                                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center',
+                                opacity: idx === currentIndex ? 1 : 0, transition: 'opacity 1s ease-in-out',
+                                '&::after': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)' }
+                            }}
+                        />
+                    ))}
+                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', color: 'white', zIndex: 1, width: '90%' }}>
+                        <Typography variant="h2" fontWeight="bold" gutterBottom>Missão Petrópolis</Typography>
+                        <Typography variant="h5" sx={{ mb: 3 }}>Modo: Explorador | Base: Centro</Typography>
+                        <Button variant="contained" color="primary" size="large" sx={{ borderRadius: '30px', px: 4 }}>
+                            Iniciar Roteiro
+                        </Button>
+                    </Box>
+                </Box>
+            );
+        };
+
+        // --- COMPONENTE CARDS DINÂMICOS ---
+        const InfoCards = ({ logistics }) => (
+            <Grid container spacing={3} sx={{ mt: -8, px: { xs: 2, md: 10 }, position: 'relative', zIndex: 2 }}>
+                <Grid item xs={12} md={4}>
+                    <Card sx={{ height: '100%', borderRadius: 4, boxShadow: 6, bgcolor: 'background.paper' }}>
+                        <CardContent>
+                            <Box display="flex" alignItems="center" mb={2}>
+                                <MaterialUI.Icon color="primary" sx={{ fontSize: 40, mr: 2 }}>directions_car</MaterialUI.Icon>
+                                <Typography variant="h6" fontWeight="bold">Deslocamento</Typography>
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                                <strong>Rota:</strong> {logistics.route.join(' → ')}<br />
+                                <strong>Tempo:</strong> {logistics.time}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <Card sx={{ height: '100%', borderRadius: 4, boxShadow: 6, bgcolor: 'background.paper' }}>
+                        <CardContent>
+                            <Box display="flex" alignItems="center" mb={2}>
+                                <MaterialUI.Icon color="secondary" sx={{ fontSize: 40, mr: 2 }}>hotel</MaterialUI.Icon>
+                                <Typography variant="h6" fontWeight="bold">Hospedagem</Typography>
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                                <strong>Loft no Centro</strong><br />
+                                Estratégia perfeita. Você resolve 80% dos pontos a pé e usa o carro apenas para a Serra.
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <Card sx={{ height: '100%', borderRadius: 4, boxShadow: 6, bgcolor: 'background.paper' }}>
+                        <CardContent>
+                            <Box display="flex" alignItems="center" mb={2}>
+                                <MaterialUI.Icon color="warning" sx={{ fontSize: 40, mr: 2 }}>warning</MaterialUI.Icon>
+                                <Typography variant="h6" fontWeight="bold">Dicas do Engenheiro</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                {logistics.tips.map((tip, i) => (
+                                    <Chip key={i} label={tip} size="small" variant="outlined" color="primary" sx={{ justifyContent: 'flex-start' }} />
+                                ))}
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+        );
+
+        // --- COMPONENTE LINHA DO TEMPO (TIMELINE) ---
+        const ItineraryTimeline = ({ days }) => (
+            <Box sx={{ maxWidth: 800, mx: 'auto', mt: 8, px: 2 }}>
+                <Typography variant="h4" fontWeight="bold" gutterBottom align="center" sx={{ mb: 6 }}>
+                    Roteiro de 3 Dias (Otimizado)
+                </Typography>
+                <Stepper orientation="vertical" sx={{ '& .MuiStepConnector-line': { minHeight: '40px' } }}>
+                    {days.map((dayObj, index) => (
+                        <Step key={index} active={true} expanded={true}>
+                            <StepLabel icon={<Box sx={{ bgcolor: 'primary.main', color: 'white', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{dayObj.day}</Box>}>
+                                <Typography variant="h6" fontWeight="bold">DIA {dayObj.day} — {dayObj.title}</Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                                    👉 Foco: {dayObj.focus}
+                                </Typography>
+                            </StepLabel>
+                            <StepContent>
+                                <Box sx={{ mb: 4, ml: 2 }}>
+                                    <Grid container spacing={2}>
+                                        {dayObj.events.map((ev, idx) => (
+                                            <Grid item xs={12} sm={6} key={idx}>
+                                                <Paper elevation={2} sx={{ p: 2, borderRadius: 3, display: 'flex', alignItems: 'flex-start', gap: 2, bgcolor: 'background.default' }}>
+                                                    <MaterialUI.Icon color="primary">{ev.icon}</MaterialUI.Icon>
+                                                    <Box>
+                                                        <Typography variant="subtitle2" fontWeight="bold" color="primary.light">
+                                                            {ev.time}
+                                                        </Typography>
+                                                        <Typography variant="body2">{ev.desc}</Typography>
+                                                    </Box>
+                                                </Paper>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </Box>
+                            </StepContent>
+                        </Step>
+                    ))}
+                </Stepper>
+            </Box>
+        );
+
+        // --- COMPONENTE NOTIFICAÇÕES EM TEMPO REAL ---
+        const RealTimeNotifications = () => {
+            const [alertData, setAlertData] = useState({ open: false, message: '', severity: 'info' });
+
+            const notificationsList = [
+                { msg: "🚙 Trânsito fluido na Ponte Rio-Niterói no momento.", type: "success" },
+                { msg: "🌦️ Previsão de neblina leve na subida da serra (BR-040).", type: "warning" },
+                { msg: "🛎️ Sua reserva no Loft no Centro está confirmada!", type: "info" },
+                { msg: "🍺 Mesa disponível na Cervejaria Bohemia para amanhã.", type: "success" }
+            ];
+
+            useEffect(() => {
+                // Simula notificações em tempo real chegando a cada 15 segundos
+                let count = 0;
+                const interval = setInterval(() => {
+                    if (count < notificationsList.length) {
+                        setAlertData({
+                            open: true,
+                            message: notificationsList[count].msg,
+                            severity: notificationsList[count].type
+                        });
+                        count++;
+                    }
+                }, 15000); // Aciona após 15s
+
+                return () => clearInterval(interval);
+            }, []);
+
+            const handleClose = (event, reason) => {
+                if (reason === 'clickaway') return;
+                setAlertData({ ...alertData, open: false });
+            };
+
+            return (
+                <Snackbar
+                    open={alertData.open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    sx={{ mt: 8 }}
+                >
+                    <Alert onClose={handleClose} severity={alertData.severity} sx={{ width: '100%', boxShadow: 4, borderRadius: 2 }}>
+                        {alertData.message}
+                    </Alert>
+                </Snackbar>
+            );
+        };
+    </script>
+
+    <!-- MÓDULO 3: APP PRINCIPAL (Simulando App.js / Index.js) -->
+    <script type="text/babel">
+        const { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Container } = MaterialUI;
+
+        // Tema Moderno Dark
+        const theme = createTheme({
+            palette: {
+                mode: 'dark',
+                primary: { main: '#ff9800' }, // Laranja moderno para viagens
+                secondary: { main: '#00bcd4' },
+                background: { default: '#121212', paper: '#1e1e1e' }
+            },
+            typography: {
+                fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+                h2: { letterSpacing: '2px' }
+            },
+            shape: { borderRadius: 12 }
+        });
+
+        function App() {
+            // Carregando dados da "API" simulada pela POO
+            const tripInfo = ItineraryData.getTripInfo();
+            const daysData = ItineraryData.getDays();
+            const images = ItineraryData.getImages();
+
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <RealTimeNotifications />
+
+                    {/* Header Moderno (Transparente no topo) */}
+                    <AppBar position="absolute" color="transparent" elevation={0} sx={{ zIndex: 10 }}>
+                        <Toolbar>
+                            <MaterialUI.Icon sx={{ color: 'primary.main', mr: 2, fontSize: 32 }}>flight_takeoff</MaterialUI.Icon>
+                            <Typography variant="h6" fontWeight="bold" color="white" sx={{ flexGrow: 1 }}>
+                                Viaja<span style={{ color: '#ff9800' }}>Tech</span>
+                            </Typography>
+                            <Button color="inherit" sx={{ color: 'white' }}>Contato</Button>
+                        </Toolbar>
+                    </AppBar>
+
+                    {/* Carrossel Principal */}
+                    <HeroCarousel images={images} />
+
+                    <Container maxWidth="lg" sx={{ pb: 10 }}>
+                        {/* Cards Dinâmicos com JS puxando o objeto logístico */}
+                        <InfoCards logistics={tripInfo.logistics} />
+
+                        {/* Timeline construída iterando os objetos */}
+                        <ItineraryTimeline days={daysData} />
+
+                        {/* Insight Final */}
+                        <Box sx={{ mt: 10, p: 4, bgcolor: 'background.paper', borderRadius: 4, textAlign: 'center', border: '1px solid #333' }}>
+                            <MaterialUI.Icon color="primary" sx={{ fontSize: 50, mb: 2 }}>psychology</MaterialUI.Icon>
+                            <Typography variant="h5" fontWeight="bold" gutterBottom>Insight Avançado</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+                                "Petrópolis tem 2 modos de experiência: Turista básico e Explorador. Você claramente é do tipo 2.
+                                Esse roteiro com <strong>{tripInfo.base}</strong> é perfeito e o carro desbloqueia 100% da viagem."
+                            </Typography>
+                            <Button variant="outlined" color="primary" sx={{ mt: 3, borderRadius: '20px' }}>
+                                Solicitar Versão Low Cost / Premium
+                            </Button>
+                        </Box>
+                    </Container>
+                </ThemeProvider>
+            );
+        }
+
+        // Montagem
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

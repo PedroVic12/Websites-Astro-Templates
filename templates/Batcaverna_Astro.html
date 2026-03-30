@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batcaverna OS - Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bat: {
+                            900: '#0a0a0a',
+                            800: '#121212',
+                            700: '#1a1a1a',
+                            neon: '#00ffcc',
+                            alert: '#ff3366',
+                            warn: '#ffcc00'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos Base e Animações Customizadas */
+        body {
+            background-color: #050505;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de Scanline (CRT Antigo/Futurista) */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(0deg, rgba(0, 255, 204, 0) 0%, rgba(0, 255, 204, 0.1) 50%, rgba(0, 255, 204, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -100px;
+            }
+        }
+
+        /* Classes para animação de entrada controlada pelo JS */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Brilho que segue o mouse */
+        #mouse-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Efeito de Vidro Futurista (Glassmorphism) */
+        .glass-panel {
+            background: rgba(18, 18, 18, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Piscar cursor do terminal */
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="relative min-h-screen font-sans selection:bg-bat-neon selection:text-black">
+
+    <!-- Scanline Overlay -->
+    <div class="scanline"></div>
+
+    <!-- Mouse Glow Effect -->
+    <div id="mouse-glow"></div>
+
+    <!-- Grid de Fundo -->
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none"
+        style="background-image: linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px); background-size: 30px 30px;">
+    </div>
+
+    <!-- Container Principal -->
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-7xl h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8 reveal-item">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-bat-800 border border-bat-neon/30 flex items-center justify-center rounded-lg shadow-[0_0_15px_rgba(0,255,204,0.2)]">
+                    <svg class="w-6 h-6 text-bat-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-widest text-white">BATCAVERNA <span
+                            class="text-bat-neon font-light">OS</span></h1>
+                    <p class="text-xs text-gray-500 font-mono tracking-widest uppercase">Sistema Operacional PVRV v2.0
+                    </p>
+                </div>
+            </div>
+            <div class="text-right font-mono">
+                <div id="sys-clock" class="text-xl text-white">00:00:00</div>
+                <div id="sys-date" class="text-xs text-gray-500">YYYY.MM.DD</div>
+            </div>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <main class="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1 overflow-hidden pb-4">
+
+            <!-- Sidebar Esquerda (Status & XP) -->
+            <div class="md:col-span-3 flex flex-col gap-6 reveal-item" style="transition-delay: 100ms;">
+
+                <!-- Perfil Card -->
+                <div class="glass-panel rounded-xl p-6 relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 left-0 w-1 h-full bg-bat-neon transform origin-bottom transition-transform duration-500 group-hover:scale-y-110">
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div
+                            class="w-16 h-16 rounded-full bg-gray-800 border-2 border-bat-neon flex items-center justify-center relative">
+                            <span class="font-bold text-white">PV</span>
+                            <div
+                                class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black">
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Pedro Victor</h2>
+                            <p class="text-xs text-bat-neon font-mono">Eng. Sênior Nvl. 7</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono text-gray-400">
+                            <span>XP Atual</span>
+                            <span>9311 / 45000</span>
+                        </div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-bat-neon" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegação -->
+                <nav class="glass-panel rounded-xl p-4 flex-1">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">Módulos do Sistema
+                    </h3>
+                    <ul class="space-y-2 font-mono text-sm">
+                        <li>
+                            <a href="#"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 text-white border border-white/10 hover:border-bat-neon/50 hover:bg-bat-neon/10 transition-colors">
+                                <span class="text-bat-neon">>&_</span> Terminal ONS (Python)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                                <span class="text-gray-600">[]_</span> Dashboard (Next.js)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                                <span class="text-gray-600">🦀_</span> Simulador (Tauri/Rust)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                                <span class="text-gray-600">⚡_</span> Estudos UFF (Astro)
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Área Central (Conteúdo Principal) -->
+            <div class="md:col-span-6 flex flex-col gap-6 reveal-item" style="transition-delay: 200ms;">
+
+                <!-- Terminal Log (O Astro hidrata isso com JS) -->
+                <div class="glass-panel rounded-xl p-1 flex flex-col flex-1 border-t-2 border-t-bat-neon">
+                    <div class="bg-black/50 px-4 py-2 border-b border-white/5 flex gap-2 items-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                        <span class="ml-2 text-xs font-mono text-gray-500">sys_log_runner.sh</span>
+                    </div>
+                    <div class="p-6 font-mono text-sm text-gray-300 flex-1 overflow-y-auto" id="terminal-content">
+                        <!-- O conteúdo será digitado pelo JS -->
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button
+                        class="glass-panel p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-bat-neon/50 transition-all text-left group">
+                        <h4 class="text-white font-bold mb-1 group-hover:text-bat-neon transition-colors">Executar
+                            Anarede</h4>
+                        <p class="text-xs text-gray-500">Inicia simulação do caso base</p>
+                    </button>
+                    <button
+                        class="glass-panel p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-bat-neon/50 transition-all text-left group">
+                        <h4 class="text-white font-bold mb-1 group-hover:text-bat-neon transition-colors">Novo Registro
+                        </h4>
+                        <p class="text-xs text-gray-500">Abrir Diário de Bordo .md</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar Direita (Métricas & Clima) -->
+            <div class="md:col-span-3 flex flex-col gap-6 reveal-item" style="transition-delay: 300ms;">
+
+                <!-- Servidores ONS Status -->
+                <div class="glass-panel rounded-xl p-6">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Status de Infraestrutura
+                    </h3>
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">API Next.js</span>
+                            <span class="text-bat-neon flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-bat-neon animate-pulse"></div> Online
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Flask Data</span>
+                            <span class="text-bat-neon flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-bat-neon animate-pulse"></div> Online
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Supabase DB</span>
+                            <span class="text-bat-neon flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-bat-neon animate-pulse"></div> 12ms
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Tauri Engine</span>
+                            <span class="text-gray-500">Standby</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progresso Diário -->
+                <div class="glass-panel rounded-xl p-6 flex-1">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Métricas de Foco</h3>
+
+                    <!-- Circular Progress Simples (CSS Trick) -->
+                    <div class="flex justify-center mb-6 relative">
+                        <svg class="w-32 h-32 transform -rotate-90">
+                            <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.1)" stroke-width="8"
+                                fill="none" />
+                            <circle cx="64" cy="64" r="56" stroke="#00ffcc" stroke-width="8" fill="none"
+                                stroke-dasharray="351.8" stroke-dashoffset="140.7"
+                                class="transition-all duration-1000 ease-out" id="focus-ring" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-3xl font-bold text-white">60<span
+                                    class="text-lg text-bat-neon">%</span></span>
+                            <span class="text-xs text-gray-500 font-mono">Concluído</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-white">Estudos UFF</span>
+                                <span class="text-gray-500">2h Restantes</span>
+                            </div>
+                        </div>
+                        <div class="bg-black/30 p-3 rounded-lg border border-white/5 opacity-50">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-400 line-through">Karatê/Treino</span>
+                                <span class="text-green-500">Feito</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts do Lado do Cliente (Simulando comportamento Astro/Vanilla JS) -->
+    <script>
+        // 1. Relógio do Sistema
+        function updateClock() {
+            const now = new Date();
+            const timeElement = document.getElementById('sys-clock');
+            const dateElement = document.getElementById('sys-date');
+
+            timeElement.textContent = now.toLocaleTimeString('pt-BR', { hour12: false });
+
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            dateElement.textContent = now.toLocaleDateString('en-ZA').replace(/\//g, '.'); // Formato YYYY.MM.DD
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. Animação de Brilho do Mouse (Glow tracking)
+        const glow = document.getElementById('mouse-glow');
+        document.addEventListener('mousemove', (e) => {
+            // Usa requestAnimationFrame para performance (Prática Astro/Vanilla)
+            requestAnimationFrame(() => {
+                glow.style.left = `${e.clientX}px`;
+                glow.style.top = `${e.clientY}px`;
+            });
+        });
+
+        // 3. Efeito de Digitação no Terminal
+        const terminalContent = document.getElementById('terminal-content');
+        const logs = [
+            "> Iniciando subsistemas PVRV...",
+            "> Carregando módulos ONS...",
+            "> [OK] Banco de dados conectado.",
+            "> [OK] React Components hidratados.",
+            "> Calculando fluxo de potência na barra slack...",
+            "> Aviso: Tensão baixa detectada no nó 42.",
+            "> Reativando protocolo de compensação...",
+            "> Sistema pronto e aguardando comandos. <span class='blink'>_</span>"
+        ];
+
+        let logIndex = 0;
+        let charIndex = 0;
+
+        function typeLog() {
+            if (logIndex < logs.length) {
+                const currentLine = logs[logIndex];
+
+                // Se for a última linha (que tem HTML), injeta direto
+                if (logIndex === logs.length - 1) {
+                    terminalContent.innerHTML += `<div class="mt-1 text-bat-neon">${currentLine}</div>`;
+                    logIndex++;
+                    return;
+                }
+
+                if (charIndex === 0) {
+                    terminalContent.innerHTML += `<div id="line-${logIndex}" class="mt-1"></div>`;
+                }
+
+                const lineElement = document.getElementById(`line-${logIndex}`);
+                lineElement.textContent += currentLine.charAt(charIndex);
+                charIndex++;
+
+                if (charIndex >= currentLine.length) {
+                    charIndex = 0;
+                    logIndex++;
+                    setTimeout(typeLog, Math.random() * 200 + 100); // Pausa entre linhas
+                } else {
+                    setTimeout(typeLog, 15); // Velocidade de digitação
+                }
+
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }
+        }
+
+        // 4. Animação de Entrada ao Carregar (Intersection Observer / Load)
+        window.addEventListener('load', () => {
+            // Revela elementos em cascata
+            const revealItems = document.querySelectorAll('.reveal-item');
+            revealItems.forEach(item => {
+                // Remove o delay inline se a tela for pequena para não travar scroll
+                if (window.innerWidth < 768) item.style.transitionDelay = '0ms';
+                item.classList.add('active');
+            });
+
+            // Inicia digitação do terminal
+            setTimeout(typeLog, 800);
+
+            // Anima anel de progresso
+            setTimeout(() => {
+                const ring = document.getElementById('focus-ring');
+                ring.style.strokeDashoffset = '140.7'; // Valor para 60%
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

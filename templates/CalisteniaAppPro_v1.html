@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calistenia Pro - Treino & Progresso</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Material UI (MUI v5) -->
+    <script crossorigin src="https://unpkg.com/@mui/material@5.14.20/umd/material-ui.production.min.js"></script>
+    
+    <!-- Material Icons Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    
+    <!-- SheetJS (Para Importar/Exportar Excel) -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body { margin: 0; padding: 0; overflow-x: hidden; background-color: #f5f5f5; }
+        /* Ocultar barra de rolagem mas manter funcionalidade para aspecto de app nativo */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { 
+            ThemeProvider, createTheme, CssBaseline, Box, Container, 
+            BottomNavigation, BottomNavigationAction, AppBar, Toolbar, 
+            Typography, IconButton, Paper, Card, CardContent, LinearProgress,
+            Tabs, Tab, List, ListItem, ListItemText, Checkbox, TextField,
+            Button, Table, TableBody, TableCell, TableHead, TableRow, TableContainer,
+            Dialog, DialogTitle, DialogContent, DialogActions, Chip, Divider, Grid
+        } = MaterialUI;
+
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // ==========================================
+        // 1. MODEL (POO) - Lógica de Negócios
+        // ==========================================
+        
+        class User {
+            constructor(weight = 70, height = 175, xp = 0) {
+                this.weight = weight;
+                this.height = height;
+                this.xp = xp;
+            }
+
+            getBMI() {
+                const heightInMeters = this.height / 100;
+                if (heightInMeters === 0) return 0;
+                return (this.weight / (heightInMeters * heightInMeters)).toFixed(1);
+            }
+
+            getBMIStatus() {
+                const bmi = this.getBMI();
+                if (bmi < 18.5) return { status: 'Abaixo do Peso', color: 'warning' };
+                if (bmi < 24.9) return { status: 'Normal', color: 'success' };
+                if (bmi < 29.9) return { status: 'Sobrepeso', color: 'warning' };
+                return { status: 'Obesidade', color: 'error' };
+            }
+
+            getLevel() {
+                // Nível progride a cada 100 XP (ex: lvl 1 = 0-99, lvl 2 = 100-299)
+                return Math.floor(Math.sqrt(this.xp / 50)) + 1;
+            }
+
+            getXPProgress() {
+                const currentLevel = this.getLevel();
+                const xpForCurrent = 50 * Math.pow(currentLevel - 1, 2);
+                const xpForNext = 50 * Math.pow(currentLevel, 2);
+                const progress = ((this.xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100;
+                return progress;
+            }
+        }
+
+        class WorkoutManager {
+            static getInitialWorkouts() {
+                return [
+                    { id: 1, type: 'Hipertrofia', name: 'Flexão Diamante', sets: 4, reps: 10, weight: 0, completed: false },
+                    { id: 2, type: 'Hipertrofia', name: 'Barra Fixa Supinada', sets: 4, reps: 8, weight: 5, completed: false },
+                    { id: 3, type: 'Cardio', name: 'Burpees', sets: 3, reps: 15, weight: 0, completed: false },
+                    { id: 4, type: 'Cardio', name: 'Corrida Estacionária', sets: 1, reps: 60, weight: 0, completed: false },
+                    { id: 5, type: 'Força', name: 'Pistol Squat', sets: 3, reps: 5, weight: 10, completed: false },
+                    { id: 6, type: 'Força', name: 'Muscle Up (Tentativa)', sets: 5, reps: 2, weight: 0, completed: false },
+                    { id: 7, type: 'Alongamento', name: 'Tocar os Pés', sets: 1, reps: 30, weight: 0, completed: false },
+                ];
+            }
+        }
+
+        class StatsCalculator {
+            static getMonthlyAndWeeklyStats(history) {
+                const now = new Date();
+                let weeklyCount = 0;
+                let monthlyCount = 0;
+
+                history.forEach(item => {
+                    const itemDate = new Date(item.date);
+                    const diffTime = Math.abs(now - itemDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+                    if (diffDays <= 7) weeklyCount++;
+                    if (diffDays <= 30) monthlyCount++;
+                });
+
+                return { weeklyCount, monthlyCount };
+            }
+        }
+
+        class ExcelService {
+            static exportData(user, workouts, history) {
+                const wb = XLSX.utils.book_new();
+
+                // Aba 1: Perfil
+                const wsUser = XLSX.utils.json_to_sheet([{
+                    Peso: user.weight, 
+                    Altura: user.height, 
+                    XP: user.xp,
+                    Nivel: user.getLevel()
+                }]);
+                XLSX.utils.book_append_sheet(wb, wsUser, "Perfil");
+
+                // Aba 2: Treinos
+                const wsWorkouts = XLSX.utils.json_to_sheet(workouts);
+                XLSX.utils.book_append_sheet(wb, wsWorkouts, "Treinos Atuais");
+
+                // Aba 3: Histórico
+                const wsHistory = XLSX.utils.json_to_sheet(history);
+                XLSX.utils.book_append_sheet(wb, wsHistory, "Historico");
+
+                // Salvar Arquivo
+                XLSX.writeFile(wb, "Calistenia_Backup.xlsx");
+            }
+
+            static importData(file, callback) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    try {
+                        const wsUser = workbook.Sheets["Perfil"];
+                        const wsWorkouts = workbook.Sheets["Treinos Atuais"];
+                        const wsHistory = workbook.Sheets["Historico"];
+
+                        const userData = XLSX.utils.sheet_to_json(wsUser)[0];
+                        const workoutsData = XLSX.utils.sheet_to_json(wsWorkouts);
+                        const historyData = XLSX.utils.sheet_to_json(wsHistory);
+
+                        callback({
+                            user: new User(userData.Peso, userData.Altura, userData.XP),
+                            workouts: workoutsData,
+                            history: historyData
+                        });
+                    } catch (err) {
+                        alert("Erro ao ler planilhas. Certifique-se de que é o arquivo correto.");
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        // ==========================================
+        // 2. CONTROLLER (MVC) - Hook Customizado
+        // ==========================================
+        
+        function useAppController() {
+            const [userModel, setUserModel] = useState(new User(75, 175, 120));
+            const [workouts, setWorkouts] = useState(WorkoutManager.getInitialWorkouts());
+            const [history, setHistory] = useState([]);
+            const [darkMode, setDarkMode] = useState(true);
+
+            // Completar Treino
+            const toggleWorkoutComplete = (id) => {
+                let xpEarned = 0;
+                const newWorkouts = workouts.map(w => {
+                    if (w.id === id) {
+                        const isCompleting = !w.completed;
+                        if (isCompleting) xpEarned = 15; // 15 XP por exercício concluído
+                        return { ...w, completed: isCompleting };
+                    }
+                    return w;
+                });
+
+                setWorkouts(newWorkouts);
+
+                if (xpEarned > 0) {
+                    const w = workouts.find(w => w.id === id);
+                    const historyEntry = { ...w, completed: true, date: new Date().toISOString() };
+                    setHistory([historyEntry, ...history]);
+                    setUserModel(new User(userModel.weight, userModel.height, userModel.xp + xpEarned));
+                }
+            };
+
+            const updateProgression = (id, newWeight) => {
+                setWorkouts(workouts.map(w => w.id === id ? { ...w, weight: Number(newWeight) } : w));
+            };
+
+            const updateUser = (field, value) => {
+                const val = Number(value);
+                setUserModel(new User(
+                    field === 'weight' ? val : userModel.weight,
+                    field === 'height' ? val : userModel.height,
+                    userModel.xp
+                ));
+            };
+
+            const handleExport = () => {
+                ExcelService.exportData(userModel, workouts, history);
+            };
+
+            const handleImport = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    ExcelService.importData(file, (data) => {
+                        setUserModel(data.user);
+                        setWorkouts(data.workouts);
+                        setHistory(data.history);
+                        alert("Dados importados com sucesso!");
+                    });
+                }
+            };
+
+            return {
+                user: userModel,
+                workouts,
+                history,
+                darkMode,
+                setDarkMode,
+                toggleWorkoutComplete,
+                updateProgression,
+                updateUser,
+                handleExport,
+                handleImport
+            };
+        }
+
+        // ==========================================
+        // 3. VIEWS (React Components)
+        // ==========================================
+
+        const DashboardView = ({ user, history }) => {
+            const bmiStatus = user.getBMIStatus();
+            const stats = StatsCalculator.getMonthlyAndWeeklyStats(history);
+
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">Visão Geral</Typography>
+                    
+                    <Card sx={{ mb: 2, borderRadius: 3, background: 'linear-gradient(135deg, #1976d2 0%, #9c27b0 100%)', color: 'white' }}>
+                        <CardContent>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Box>
+                                    <Typography variant="overline">Nível Atual</Typography>
+                                    <Typography variant="h3" fontWeight="bold">{user.getLevel()}</Typography>
+                                </Box>
+                                <Box textAlign="right">
+                                    <Typography variant="overline">XP Total</Typography>
+                                    <Typography variant="h5">{user.xp} XP</Typography>
+                                </Box>
+                            </Box>
+                            <Box mt={2}>
+                                <Typography variant="caption">Progresso para o próximo nível</Typography>
+                                <LinearProgress 
+                                    variant="determinate" 
+                                    value={user.getXPProgress()} 
+                                    sx={{ height: 8, borderRadius: 4, mt: 1, backgroundColor: 'rgba(255,255,255,0.3)', '& .MuiLinearProgress-bar': { backgroundColor: '#fff' } }} 
+                                />
+                            </Box>
+                        </CardContent>
+                    </Card>
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <Card sx={{ borderRadius: 3, textAlign: 'center', height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="body2" color="textSecondary">Seu IMC</Typography>
+                                    <Typography variant="h4" color="primary" sx={{ my: 1 }}>{user.getBMI()}</Typography>
+                                    <Chip label={bmiStatus.status} color={bmiStatus.color} size="small" />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Card sx={{ borderRadius: 3, textAlign: 'center', height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="body2" color="textSecondary">Treinos Realizados</Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>Esta Semana: <b>{stats.weeklyCount}</b></Typography>
+                                    <Typography variant="body1">Este Mês: <b>{stats.monthlyCount}</b></Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </Box>
+            );
+        };
+
+        const WorkoutView = ({ workouts, toggleWorkoutComplete, updateProgression }) => {
+            const [tabValue, setTabValue] = useState(0);
+            const categories = ['Hipertrofia', 'Cardio', 'Força', 'Alongamento'];
+
+            const filteredWorkouts = workouts.filter(w => w.type === categories[tabValue]);
+
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)} variant="scrollable" scrollButtons="auto">
+                        {categories.map((cat, idx) => <Tab key={idx} label={cat} />)}
+                    </Tabs>
+                    
+                    <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+                        {filteredWorkouts.length === 0 && <Typography align="center" mt={4}>Nenhum treino cadastrado nesta categoria.</Typography>}
+                        <List>
+                            {filteredWorkouts.map((w) => (
+                                <Card key={w.id} sx={{ mb: 2, borderRadius: 2 }}>
+                                    <ListItem>
+                                        <Checkbox 
+                                            checked={w.completed} 
+                                            onChange={() => toggleWorkoutComplete(w.id)}
+                                            color="success"
+                                        />
+                                        <ListItemText 
+                                            title={w.name}
+                                            secondary={`${w.sets} séries x ${w.reps} reps`}
+                                            sx={{ textDecoration: w.completed ? 'line-through' : 'none' }}
+                                        />
+                                        <Box sx={{ width: 80 }}>
+                                            <TextField 
+                                                label="Carga (kg)" 
+                                                type="number" 
+                                                size="small"
+                                                variant="standard"
+                                                value={w.weight}
+                                                onChange={(e) => updateProgression(w.id, e.target.value)}
+                                                disabled={w.completed}
+                                            />
+                                        </Box>
+                                    </ListItem>
+                                </Card>
+                            ))}
+                        </List>
+                    </Box>
+                </Box>
+            );
+        };
+
+        const HistoryView = ({ history }) => {
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">Histórico de Treinos</Typography>
+                    
+                    <TableContainer component={Paper} sx={{ borderRadius: 3, maxHeight: '70vh' }}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Data</TableCell>
+                                    <TableCell>Exercício</TableCell>
+                                    <TableCell align="right">Carga/Reps</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {history.length === 0 ? (
+                                    <TableRow><TableCell colSpan={3} align="center">Nenhum treino registrado.</TableCell></TableRow>
+                                ) : (
+                                    history.map((row, idx) => {
+                                        const d = new Date(row.date);
+                                        return (
+                                            <TableRow key={idx}>
+                                                <TableCell>{d.toLocaleDateString('pt-BR')} {d.getHours()}:{String(d.getMinutes()).padStart(2,'0')}</TableCell>
+                                                <TableCell>{row.name} ({row.type})</TableCell>
+                                                <TableCell align="right">{row.weight > 0 ? `${row.weight}kg` : `${row.sets}x${row.reps}`}</TableCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            );
+        };
+
+        const ProfileSettingsView = ({ user, updateUser, handleExport, handleImport }) => {
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">Perfil & Dados</Typography>
+                    
+                    <Card sx={{ mb: 3, borderRadius: 3 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom>Medidas Corporais</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField 
+                                        fullWidth label="Peso (kg)" type="number" 
+                                        value={user.weight} onChange={(e) => updateUser('weight', e.target.value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField 
+                                        fullWidth label="Altura (cm)" type="number" 
+                                        value={user.height} onChange={(e) => updateUser('height', e.target.value)}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+
+                    <Card sx={{ borderRadius: 3 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom>Planilhas Excel</Typography>
+                            <Typography variant="body2" color="textSecondary" mb={2}>
+                                Exporte seus treinos para preencher planilhas ou importe para atualizar o app. O arquivo contém abas para Perfil, Treinos e Histórico.
+                            </Typography>
+                            
+                            <Button variant="contained" color="primary" fullWidth startIcon={<MaterialUI.Icon>download</MaterialUI.Icon>} sx={{ mb: 2 }} onClick={handleExport}>
+                                Exportar Dados (.xlsx)
+                            </Button>
+                            
+                            <Button variant="outlined" component="label" fullWidth startIcon={<MaterialUI.Icon>upload</MaterialUI.Icon>}>
+                                Importar Dados (.xlsx)
+                                <input type="file" hidden accept=".xlsx, .xls" onChange={handleImport} />
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </Box>
+            );
+        };
+
+        // ==========================================
+        // 4. MAIN APP COMPONENT
+        // ==========================================
+
+        function App() {
+            // Instancia o Controller
+            const ctrl = useAppController();
+            const [currentRoute, setCurrentRoute] = useState(0);
+
+            // Definição do Tema baseado no estado darkMode
+            const theme = useMemo(() => createTheme({
+                palette: {
+                    mode: ctrl.darkMode ? 'dark' : 'light',
+                    primary: { main: '#9c27b0' }, // Roxo Calistenia
+                    secondary: { main: '#03a9f4' },
+                    background: {
+                        default: ctrl.darkMode ? '#121212' : '#f5f5f5',
+                        paper: ctrl.darkMode ? '#1e1e1e' : '#ffffff',
+                    }
+                },
+                typography: {
+                    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+                }
+            }), [ctrl.darkMode]);
+
+            // Sistema Simples de Roteamento Estático
+            const renderView = () => {
+                switch(currentRoute) {
+                    case 0: return <DashboardView user={ctrl.user} history={ctrl.history} />;
+                    case 1: return <WorkoutView workouts={ctrl.workouts} toggleWorkoutComplete={ctrl.toggleWorkoutComplete} updateProgression={ctrl.updateProgression} />;
+                    case 2: return <HistoryView history={ctrl.history} />;
+                    case 3: return <ProfileSettingsView user={ctrl.user} updateUser={ctrl.updateUser} handleExport={ctrl.handleExport} handleImport={ctrl.handleImport} />;
+                    default: return <DashboardView user={ctrl.user} history={ctrl.history} />;
+                }
+            };
+
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+                        
+                        {/* AppBar Customizado */}
+                        <AppBar position="static" color="inherit" elevation={1}>
+                            <Toolbar>
+                                <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+                                    Calistenia<span style={{color: theme.palette.primary.main}}>Pro</span>
+                                </Typography>
+                                <IconButton onClick={() => ctrl.setDarkMode(!ctrl.darkMode)} color="inherit">
+                                    <MaterialUI.Icon>{ctrl.darkMode ? 'light_mode' : 'dark_mode'}</MaterialUI.Icon>
+                                </IconButton>
+                            </Toolbar>
+                        </AppBar>
+
+                        {/* Área Principal Dinâmica (View) */}
+                        <Box sx={{ flexGrow: 1, overflowY: 'auto', pb: 8 }}>
+                            <Container maxWidth="sm" disableGutters>
+                                {renderView()}
+                            </Container>
+                        </Box>
+
+                        {/* Navegação Inferior estilo Mobile */}
+                        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+                            <BottomNavigation
+                                showLabels
+                                value={currentRoute}
+                                onChange={(event, newValue) => setCurrentRoute(newValue)}
+                            >
+                                <BottomNavigationAction label="Painel" icon={<MaterialUI.Icon>dashboard</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Treino" icon={<MaterialUI.Icon>fitness_center</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Histórico" icon={<MaterialUI.Icon>history</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Perfil" icon={<MaterialUI.Icon>person</MaterialUI.Icon>} />
+                            </BottomNavigation>
+                        </Paper>
+
+                    </Box>
+                </ThemeProvider>
+            );
+        }
+
+        // Renderização Inicial
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
