@@ -1,7 +1,19 @@
 {
-  "name": "Marve10s",
-  "type": "module",
+  "name": "marvel_template",
   "version": "0.0.1",
+  "description": "<div align=\"center\">",
+  "homepage": "https://github.com/PedroVic12/Websites-Astro-Templates#readme",
+  "bugs": {
+    "url": "https://github.com/PedroVic12/Websites-Astro-Templates/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PedroVic12/Websites-Astro-Templates.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "svelte.config.js",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -32,5 +44,6 @@
     "svelte": "^5.10.0",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.7.2"
-  }
+  },
+  "devDependencies": {}
 }
