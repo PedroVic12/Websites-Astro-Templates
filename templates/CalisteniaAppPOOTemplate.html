@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calistenia Pro v2 - Treino & Progresso</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Material UI (MUI v5) -->
+    <script crossorigin src="https://unpkg.com/@mui/material@5.14.20/umd/material-ui.production.min.js"></script>
+
+    <!-- Material Icons Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+    <!-- SheetJS (Para Importar/Exportar Excel) -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #f5f5f5;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- MÓDULO 1: MODEL (POO) & SERVIÇOS -->
+    <script type="text/babel">
+        class User {
+            constructor(weight = 70, height = 175, xp = 0) {
+                this.weight = weight;
+                this.height = height;
+                this.xp = xp;
+            }
+
+            getBMI() {
+                const heightInMeters = this.height / 100;
+                if (heightInMeters === 0) return 0;
+                return (this.weight / (heightInMeters * heightInMeters)).toFixed(1);
+            }
+
+            getBMIStatus() {
+                const bmi = this.getBMI();
+                if (bmi < 18.5) return { status: 'Abaixo do Peso', color: 'warning' };
+                if (bmi < 24.9) return { status: 'Normal', color: 'success' };
+                if (bmi < 29.9) return { status: 'Sobrepeso', color: 'warning' };
+                return { status: 'Obesidade', color: 'error' };
+            }
+
+            getLevel() {
+                return Math.floor(Math.sqrt(this.xp / 50)) + 1;
+            }
+
+            getDbzLevelName() {
+                const lvl = this.getLevel();
+                if (lvl === 1) return 'Guerreiro Z';
+                if (lvl === 2) return 'Super Saiyajin 1';
+                if (lvl === 3) return 'Super Saiyajin 2';
+                if (lvl === 4) return 'Super Saiyajin 3';
+                if (lvl === 5) return 'Super Saiyajin God';
+                if (lvl === 6) return 'Super Saiyajin Blue';
+                return 'Instinto Superior';
+            }
+
+            getXPProgress() {
+                const currentLevel = this.getLevel();
+                const xpForCurrent = 50 * Math.pow(currentLevel - 1, 2);
+                const xpForNext = 50 * Math.pow(currentLevel, 2);
+                return ((this.xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100;
+            }
+        }
+
+        // NOVO: Classe Modelo para os Exercícios
+        class ExercicioSayajin {
+            constructor(id, category, name, sets, reps, weight, completedSets, difficulty, ssjLevel) {
+                this.id = id;
+                this.category = category; // Cardio, Push, Pull, Legs, Abs, Alongamentos, Karate
+                this.name = name;
+                this.sets = sets;
+                this.reps = reps;
+                this.weight = weight;
+                // Prepara as séries como array de booleanos
+                this.completedSets = Array.isArray(completedSets)
+                    ? completedSets
+                    : Array(sets).fill(false);
+                this.difficulty = difficulty; // 1(Verde), 2(Laranja), 3(Vermelho)
+                this.ssjLevel = ssjLevel; // 1, 2, 3...
+            }
+        }
+
+        class WorkoutManager {
+            static getInitialWorkouts() {
+                return [
+                    // ==========================================
+                    // --- NÍVEL SSJ 1 (Iniciante / Adaptação) ---
+                    // ==========================================
+
+                    // PUSH (Empurrar)
+                    new ExercicioSayajin(1, 'Push', 'Flexão na Parede', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(2, 'Push', 'Flexão Inclinada (Banco)', 3, 12, 0, null, 1, 1),
+                    new ExercicioSayajin(3, 'Push', 'Flexão de Joelhos', 4, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(4, 'Push', 'Flexão Tradicional', 4, 8, 0, null, 1, 1),
+                    new ExercicioSayajin(5, 'Push', 'Dips no Banco', 3, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(6, 'Push', 'Prancha com Toque no Ombro', 3, 20, 0, null, 1, 1),
+
+                    // PULL (Puxar)
+                    new ExercicioSayajin(7, 'Pull', 'Remada na Porta', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(8, 'Pull', 'Remada Australiana (Joelhos)', 3, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(9, 'Pull', 'Remada Australiana Completa', 4, 8, 0, null, 1, 1),
+                    new ExercicioSayajin(10, 'Pull', 'Isometria na Barra (Queixo passa a barra)', 3, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(11, 'Pull', 'Negativa de Barra Fixa', 3, 5, 0, null, 1, 1),
+                    new ExercicioSayajin(12, 'Pull', 'Australian Chin-up', 3, 8, 0, null, 1, 1),
+
+                    // LEGS (Pernas)
+                    new ExercicioSayajin(13, 'Legs', 'Agachamento Assistido', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(14, 'Legs', 'Agachamento Livre', 4, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(15, 'Legs', 'Afundo (Lunges)', 3, 12, 0, null, 1, 1),
+                    new ExercicioSayajin(16, 'Legs', 'Elevação Pélvica', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(17, 'Legs', 'Elevação de Panturrilha em Pé', 4, 20, 0, null, 1, 1),
+                    new ExercicioSayajin(18, 'Legs', 'Wall Sit (Isometria na Parede)', 3, 30, 0, null, 1, 1),
+
+                    // ABS (Abdómen)
+                    new ExercicioSayajin(19, 'Abs', 'Prancha Isométrica', 3, 40, 0, null, 1, 1),
+                    new ExercicioSayajin(20, 'Abs', 'Abdominal Remador', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(21, 'Abs', 'Crunch Clássico', 3, 20, 0, null, 1, 1),
+                    new ExercicioSayajin(22, 'Abs', 'Elevação de Pernas Deitado', 3, 12, 0, null, 1, 1),
+                    new ExercicioSayajin(23, 'Abs', 'Prancha Lateral', 3, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(24, 'Abs', 'Toque no Calcanhar', 3, 20, 0, null, 1, 1),
+
+                    // CARDIO
+                    new ExercicioSayajin(25, 'Cardio', 'Polichinelos', 3, 50, 0, null, 1, 1),
+                    new ExercicioSayajin(26, 'Cardio', 'Corrida Estacionária', 3, 60, 0, null, 1, 1),
+                    new ExercicioSayajin(27, 'Cardio', 'Pular Corda', 3, 50, 0, null, 1, 1),
+                    new ExercicioSayajin(28, 'Cardio', 'Mountain Climbers', 3, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(29, 'Cardio', 'Burpee Iniciante (Sem flexão)', 3, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(30, 'Cardio', 'High Knees (Joelhos Altos)', 3, 40, 0, null, 1, 1),
+
+                    // ALONGAMENTOS
+                    new ExercicioSayajin(31, 'Alongamentos', 'Tocar os Pés', 2, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(32, 'Alongamentos', 'Alongamento Peitoral (Parede)', 2, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(33, 'Alongamentos', 'Postura Gato-Vaca', 2, 10, 0, null, 1, 1),
+                    new ExercicioSayajin(34, 'Alongamentos', 'Alongamento de Quadríceps', 2, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(35, 'Alongamentos', 'Postura da Borboleta', 2, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(36, 'Alongamentos', 'Postura da Cobra (Yoga)', 2, 20, 0, null, 1, 1),
+
+                    // KARATE
+                    new ExercicioSayajin(37, 'Karate', 'Kihon Básico (Socos)', 3, 20, 0, null, 1, 1),
+                    new ExercicioSayajin(38, 'Karate', 'Mae Geri (Chute Frontal)', 3, 15, 0, null, 1, 1),
+                    new ExercicioSayajin(39, 'Karate', 'Defesa Jodan Uke', 3, 20, 0, null, 1, 1),
+                    new ExercicioSayajin(40, 'Karate', 'Defesa Gedan Barai', 3, 20, 0, null, 1, 1),
+                    new ExercicioSayajin(41, 'Karate', 'Zenkutsu Dachi (Base Isometria)', 3, 30, 0, null, 1, 1),
+                    new ExercicioSayajin(42, 'Karate', 'Kata Taikyoku Shodan', 3, 1, 0, null, 1, 1),
+
+                    // ==========================================
+                    // --- NÍVEL SSJ 2 (Intermédio / Força) -----
+                    // ==========================================
+
+                    // PUSH
+                    new ExercicioSayajin(43, 'Push', 'Flexão Diamante', 4, 10, 0, null, 2, 2),
+                    new ExercicioSayajin(44, 'Push', 'Flexão Declinada (Pés no banco)', 4, 12, 0, null, 2, 2),
+                    new ExercicioSayajin(45, 'Push', 'Dips nas Paralelas', 4, 8, 5, null, 2, 2),
+                    new ExercicioSayajin(46, 'Push', 'Pseudo Planche Pushup', 3, 8, 0, null, 2, 2),
+                    new ExercicioSayajin(47, 'Push', 'Pike Pushup (Foco Ombros)', 4, 8, 0, null, 2, 2),
+                    new ExercicioSayajin(48, 'Push', 'Skull Crusher Corporal', 3, 10, 0, null, 2, 2),
+
+                    // PULL
+                    new ExercicioSayajin(49, 'Pull', 'Barra Fixa Pronada', 4, 8, 0, null, 2, 2),
+                    new ExercicioSayajin(50, 'Pull', 'Barra Fixa Supinada', 4, 8, 5, null, 2, 2),
+                    new ExercicioSayajin(51, 'Pull', 'Commando Pull-up', 3, 6, 0, null, 2, 2),
+                    new ExercicioSayajin(52, 'Pull', 'L-Sit Pull-up (Adaptação)', 3, 5, 0, null, 2, 2),
+                    new ExercicioSayajin(53, 'Pull', 'Front Lever Tuck (Isometria)', 4, 10, 0, null, 2, 2),
+                    new ExercicioSayajin(54, 'Pull', 'Skin the Cat (Transição)', 3, 3, 0, null, 2, 2),
+
+                    // LEGS
+                    new ExercicioSayajin(55, 'Legs', 'Pistol Squat Assistido', 4, 6, 0, null, 2, 2),
+                    new ExercicioSayajin(56, 'Legs', 'Agachamento Búlgaro', 4, 10, 5, null, 2, 2),
+                    new ExercicioSayajin(57, 'Legs', 'Shrimp Squat', 3, 5, 0, null, 2, 2),
+                    new ExercicioSayajin(58, 'Legs', 'Jump Squat (Agachamento Salto)', 4, 12, 0, null, 2, 2),
+                    new ExercicioSayajin(59, 'Legs', 'Panturrilha Unilateral', 4, 15, 0, null, 2, 2),
+                    new ExercicioSayajin(60, 'Legs', 'Nordic Curl Assistido', 3, 5, 0, null, 2, 2),
+
+                    // ABS
+                    new ExercicioSayajin(61, 'Abs', 'L-Sit Tuck (Isometria)', 3, 15, 0, null, 2, 2),
+                    new ExercicioSayajin(62, 'Abs', 'V-Up', 4, 12, 0, null, 2, 2),
+                    new ExercicioSayajin(63, 'Abs', 'Hollow Body Hold', 4, 30, 0, null, 2, 2),
+                    new ExercicioSayajin(64, 'Abs', 'Toque na Ponta do Pé na Barra', 3, 8, 0, null, 2, 2),
+                    new ExercicioSayajin(65, 'Abs', 'Prancha Superman', 3, 20, 0, null, 2, 2),
+                    new ExercicioSayajin(66, 'Abs', 'Dragon Flag Tuck', 3, 8, 0, null, 2, 2),
+
+                    // CARDIO
+                    new ExercicioSayajin(67, 'Cardio', 'Burpees Completos', 4, 15, 0, null, 2, 2),
+                    new ExercicioSayajin(68, 'Cardio', 'Sprints 100m', 5, 1, 0, null, 2, 2),
+                    new ExercicioSayajin(69, 'Cardio', 'Jump Lunges', 3, 20, 0, null, 2, 2),
+                    new ExercicioSayajin(70, 'Cardio', 'Corda: Double Unders', 4, 20, 0, null, 2, 2),
+                    new ExercicioSayajin(71, 'Cardio', 'Box Jump (Salto na Caixa)', 4, 10, 0, null, 2, 2),
+                    new ExercicioSayajin(72, 'Cardio', 'Suicídio (Corrida vai e vem)', 3, 5, 0, null, 2, 2),
+
+                    // ALONGAMENTOS
+                    new ExercicioSayajin(73, 'Alongamentos', 'Ponte (Bridge)', 3, 15, 0, null, 2, 2),
+                    new ExercicioSayajin(74, 'Alongamentos', 'Espacate Frontal Assistido', 2, 30, 0, null, 2, 2),
+                    new ExercicioSayajin(75, 'Alongamentos', 'Alongamento Isquiotibiais Avançado', 2, 30, 0, null, 2, 2),
+                    new ExercicioSayajin(76, 'Alongamentos', 'Torção Espinhal', 2, 30, 0, null, 2, 2),
+                    new ExercicioSayajin(77, 'Alongamentos', 'Pigeon Pose', 2, 30, 0, null, 2, 2),
+                    new ExercicioSayajin(78, 'Alongamentos', 'Couch Stretch', 2, 30, 0, null, 2, 2),
+
+                    // KARATE
+                    new ExercicioSayajin(79, 'Karate', 'Kata Heian Shodan', 3, 1, 0, null, 2, 2),
+                    new ExercicioSayajin(80, 'Karate', 'Mawashi Geri (Chute Circular)', 4, 10, 0, null, 2, 2),
+                    new ExercicioSayajin(81, 'Karate', 'Yoko Geri Keage (Lateral)', 3, 10, 0, null, 2, 2),
+                    new ExercicioSayajin(82, 'Karate', 'Gyaku Zuki (Soco Reverso)', 4, 20, 0, null, 2, 2),
+                    new ExercicioSayajin(83, 'Karate', 'Shuto Uke', 3, 15, 0, null, 2, 2),
+                    new ExercicioSayajin(84, 'Karate', 'Sequência Kumite Básica', 4, 5, 0, null, 2, 2),
+
+                    // ==========================================
+                    // --- NÍVEL SSJ 3 (Avançado / Domínio) -----
+                    // ==========================================
+
+                    // PUSH
+                    new ExercicioSayajin(85, 'Push', 'Handstand Pushup Livre', 4, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(86, 'Push', 'Planche Lean', 4, 15, 0, null, 3, 3),
+                    new ExercicioSayajin(87, 'Push', 'Tuck Planche Pushup', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(88, 'Push', 'Flexão de 1 Braço (OAP)', 3, 4, 0, null, 3, 3),
+                    new ExercicioSayajin(89, 'Push', 'Ring Dips (Argolas)', 4, 8, 0, null, 3, 3),
+                    new ExercicioSayajin(90, 'Push', '90 Degree Pushup (Tentativa)', 3, 2, 0, null, 3, 3),
+
+                    // PULL
+                    new ExercicioSayajin(91, 'Pull', 'Muscle Up Estrito', 4, 3, 0, null, 3, 3),
+                    new ExercicioSayajin(92, 'Pull', 'Front Lever (Isometria Livre)', 4, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(93, 'Pull', 'One Arm Pull-up (OAP Assistido)', 3, 3, 0, null, 3, 3),
+                    new ExercicioSayajin(94, 'Pull', 'Front Lever Pull-up', 3, 3, 0, null, 3, 3),
+                    new ExercicioSayajin(95, 'Pull', 'Archer Pull-up', 3, 6, 0, null, 3, 3),
+                    new ExercicioSayajin(96, 'Pull', 'Hefesto (Treino de Força)', 3, 2, 0, null, 3, 3),
+
+                    // LEGS
+                    new ExercicioSayajin(97, 'Legs', 'Pistol Squat Livre', 4, 8, 10, null, 3, 3),
+                    new ExercicioSayajin(98, 'Legs', 'Dragon Squat', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(99, 'Legs', 'Nordic Hamstring Curl Completo', 4, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(100, 'Legs', 'Glute Ham Raise', 3, 8, 0, null, 3, 3),
+                    new ExercicioSayajin(101, 'Legs', 'Sissy Squat Livre', 3, 10, 0, null, 3, 3),
+                    new ExercicioSayajin(102, 'Legs', 'Agachamento com Salto Unilateral', 3, 6, 0, null, 3, 3),
+
+                    // ABS
+                    new ExercicioSayajin(103, 'Abs', 'Dragon Flag Completo', 4, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(104, 'Abs', 'L-Sit Completo (Chão)', 4, 15, 0, null, 3, 3),
+                    new ExercicioSayajin(105, 'Abs', 'Front Lever Raises', 3, 6, 0, null, 3, 3),
+                    new ExercicioSayajin(106, 'Abs', 'Human Flag (Bandeira)', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(107, 'Abs', 'Ab Wheel em Pé', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(108, 'Abs', 'Windshield Wipers (Barra Fixa)', 3, 10, 0, null, 3, 3),
+
+                    // CARDIO
+                    new ExercicioSayajin(109, 'Cardio', 'Sprints em Ladeira Extrema', 5, 1, 0, null, 3, 3),
+                    new ExercicioSayajin(110, 'Cardio', 'Burpee seguido de Muscle Up', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(111, 'Cardio', 'Corda: Triple Unders', 3, 10, 0, null, 3, 3),
+                    new ExercicioSayajin(112, 'Cardio', 'Corrida 5km (Pace Forte)', 1, 1, 0, null, 3, 3),
+                    new ExercicioSayajin(113, 'Cardio', 'Sprint de Escadarias', 4, 1, 0, null, 3, 3),
+                    new ExercicioSayajin(114, 'Cardio', 'Box Jump Extremo', 4, 5, 0, null, 3, 3),
+
+                    // ALONGAMENTOS
+                    new ExercicioSayajin(115, 'Alongamentos', 'Espacate Frontal Completo', 2, 45, 0, null, 3, 3),
+                    new ExercicioSayajin(116, 'Alongamentos', 'Espacate Lateral (Zercher)', 2, 45, 0, null, 3, 3),
+                    new ExercicioSayajin(117, 'Alongamentos', 'Backbend Completo (Ponte Yoga)', 2, 20, 0, null, 3, 3),
+                    new ExercicioSayajin(118, 'Alongamentos', 'Panqueca (Pancake Stretch)', 2, 30, 0, null, 3, 3),
+                    new ExercicioSayajin(119, 'Alongamentos', 'Posição de Lótus', 2, 60, 0, null, 3, 3),
+                    new ExercicioSayajin(120, 'Alongamentos', 'Deslocamento de Ombros c/ Bastão', 2, 10, 0, null, 3, 3),
+
+                    // KARATE
+                    new ExercicioSayajin(121, 'Karate', 'Kumite Sombra Avançado', 3, 60, 0, null, 3, 3),
+                    new ExercicioSayajin(122, 'Karate', 'Kata Bassai Dai', 3, 1, 0, null, 3, 3),
+                    new ExercicioSayajin(123, 'Karate', 'Ushiro Geri (Chute Traseiro)', 4, 10, 0, null, 3, 3),
+                    new ExercicioSayajin(124, 'Karate', 'Tobi Geri (Chute Voador)', 3, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(125, 'Karate', 'Sequência Kumite Avançada', 5, 5, 0, null, 3, 3),
+                    new ExercicioSayajin(126, 'Karate', 'Simulação de Tameshiwari (Quebramento)', 3, 1, 0, null, 3, 3),
+                ];
+            }
+        }
+
+        class StorageService {
+            static saveData(user, workouts, history) {
+                const data = {
+                    user: { weight: user.weight, height: user.height, xp: user.xp },
+                    workouts,
+                    history
+                };
+                localStorage.setItem('calistenia_app_data', JSON.stringify(data));
+            }
+
+            static loadData() {
+                const dataStr = localStorage.getItem('calistenia_app_data');
+                if (dataStr) {
+                    try {
+                        const data = JSON.parse(dataStr);
+                        // Restaura os objetos na classe ExercicioSayajin
+                        const restoredWorkouts = data.workouts.map(w => new ExercicioSayajin(
+                            w.id, w.category || w.type, w.name, w.sets, w.reps, w.weight, w.completedSets, w.difficulty, w.ssjLevel
+                        ));
+                        return {
+                            user: new User(data.user.weight, data.user.height, data.user.xp),
+                            workouts: restoredWorkouts,
+                            history: data.history
+                        };
+                    } catch (e) {
+                        console.error("Erro ao carregar dados locais", e);
+                    }
+                }
+                return null;
+            }
+        }
+
+        class ExcelService {
+            static exportData(user, workouts, history) {
+                const wb = XLSX.utils.book_new();
+                const wsUser = XLSX.utils.json_to_sheet([{ Peso: user.weight, Altura: user.height, XP: user.xp, Nivel: user.getLevel() }]);
+                XLSX.utils.book_append_sheet(wb, wsUser, "Perfil");
+
+                // Serializando arrays para excel
+                const serializedWorkouts = workouts.map(w => ({
+                    id: w.id, category: w.category, name: w.name, sets: w.sets, reps: w.reps, weight: w.weight,
+                    difficulty: w.difficulty, ssjLevel: w.ssjLevel, completedSets: JSON.stringify(w.completedSets)
+                }));
+                const wsWorkouts = XLSX.utils.json_to_sheet(serializedWorkouts);
+                XLSX.utils.book_append_sheet(wb, wsWorkouts, "Treinos Atuais");
+
+                const wsHistory = XLSX.utils.json_to_sheet(history);
+                XLSX.utils.book_append_sheet(wb, wsHistory, "Historico");
+
+                XLSX.writeFile(wb, "Calistenia_Backup.xlsx");
+            }
+
+            static importData(file, callback) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    try {
+                        const wsUser = workbook.Sheets["Perfil"];
+                        const wsWorkouts = workbook.Sheets["Treinos Atuais"];
+                        const wsHistory = workbook.Sheets["Historico"];
+
+                        const userData = XLSX.utils.sheet_to_json(wsUser)[0];
+                        const workoutsData = XLSX.utils.sheet_to_json(wsWorkouts).map(w => new ExercicioSayajin(
+                            w.id, w.category, w.name, w.sets, w.reps, w.weight,
+                            w.completedSets ? JSON.parse(w.completedSets) : null,
+                            w.difficulty, w.ssjLevel
+                        ));
+                        const historyData = XLSX.utils.sheet_to_json(wsHistory);
+
+                        callback({
+                            user: new User(userData.Peso, userData.Altura, userData.XP),
+                            workouts: workoutsData,
+                            history: historyData
+                        });
+                    } catch (err) {
+                        alert("Erro ao ler planilhas.");
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+    </script>
+
+    <!-- MÓDULO 2: VIEWS & COMPONENTES -->
+    <script type="text/babel">
+        const {
+            ThemeProvider, createTheme, CssBaseline, Box, Container,
+            BottomNavigation, BottomNavigationAction, AppBar, Toolbar,
+            Typography, IconButton, Paper, Card, CardContent, LinearProgress,
+            Tabs, Tab, List, ListItem, ListItemText, Checkbox, TextField,
+            Button, Table, TableBody, TableCell, TableHead, TableRow, TableContainer,
+            Dialog, DialogTitle, DialogContent, DialogActions, Chip, Divider, Grid
+        } = MaterialUI;
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- View 1: Dashboard ---
+        const DashboardView = ({ user, history }) => {
+            const bmiStatus = user.getBMIStatus();
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">Visão Geral</Typography>
+
+                    <Card sx={{ mb: 2, borderRadius: 3, background: 'linear-gradient(135deg, #ff9800 0%, #f44336 100%)', color: 'white' }}>
+                        <CardContent>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Box>
+                                    <Typography variant="overline">Nível: {user.getLevel()}</Typography>
+                                    <Typography variant="h5" fontWeight="bold" sx={{ textTransform: 'uppercase', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+                                        {user.getDbzLevelName()}
+                                    </Typography>
+                                </Box>
+                                <Box textAlign="right">
+                                    <Typography variant="overline">Ki (XP) Total</Typography>
+                                    <Typography variant="h5">{user.xp}</Typography>
+                                </Box>
+                            </Box>
+                            <Box mt={2}>
+                                <Typography variant="caption">Progresso para a próxima transformação</Typography>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={user.getXPProgress()}
+                                    sx={{ height: 8, borderRadius: 4, mt: 1, backgroundColor: 'rgba(255,255,255,0.3)', '& .MuiLinearProgress-bar': { backgroundColor: '#fff' } }}
+                                />
+                            </Box>
+                        </CardContent>
+                    </Card>
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Card sx={{ borderRadius: 3, textAlign: 'center' }}>
+                                <CardContent>
+                                    <Typography variant="body2" color="textSecondary">Seu IMC</Typography>
+                                    <Typography variant="h4" color="primary" sx={{ my: 1 }}>{user.getBMI()}</Typography>
+                                    <Chip label={bmiStatus.status} color={bmiStatus.color} size="small" />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </Box>
+            );
+        };
+
+        // --- View 2: Treinos (Duas fileiras de Tabs e Checklist por Série) ---
+        const WorkoutView = ({ workouts, toggleSetComplete, updateProgression }) => {
+            const theme = MaterialUI.useTheme();
+            const isDark = theme.palette.mode === 'dark';
+
+            const [ssjTab, setSsjTab] = useState(0); // Aba Principal
+            const [catTab, setCatTab] = useState(0); // Aba Secundária (Categoria)
+
+            const ssjLevels = [1, 2, 3];
+            const ssjNames = ['Super Saiyajin 1', 'Super Saiyajin 2', 'Super Saiyajin 3'];
+            const categories = ['Cardio', 'Push', 'Pull', 'Legs', 'Abs', 'Alongamentos', 'Karate'];
+
+            // Filtros
+            const levelWorkouts = workouts.filter(w => w.ssjLevel === ssjLevels[ssjTab]);
+            const filteredWorkouts = levelWorkouts.filter(w => w.category === categories[catTab]);
+
+            // Cálculo da barra circular de progresso DO NÍVEL SSJ ATUAL INTEIRO (não só da categoria)
+            const totalSets = levelWorkouts.reduce((acc, w) => acc + w.sets, 0);
+            const completedSetsCount = levelWorkouts.reduce((acc, w) => acc + w.completedSets.filter(Boolean).length, 0);
+            const progressPercentage = totalSets === 0 ? 0 : Math.round((completedSetsCount / totalSets) * 100);
+
+            const getDifficultyBgColor = (diff) => {
+                if (isDark) {
+                    if (diff === 1) return '#2e7d32'; // Verde
+                    if (diff === 2) return '#e65100'; // Laranja
+                    if (diff === 3) return '#c62828'; // Vermelho
+                } else {
+                    if (diff === 1) return '#a5d6a7'; // Verde Claro
+                    if (diff === 2) return '#ffcc80'; // Laranja Claro
+                    if (diff === 3) return '#ef9a9a'; // Vermelho Claro
+                }
+                return isDark ? '#1e1e1e' : '#ffffff';
+            };
+
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+                    {/* Abas Principais (Super Saiyajin) */}
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs
+                            value={ssjTab}
+                            onChange={(e, val) => { setSsjTab(val); setCatTab(0); }}
+                            variant="fullWidth"
+                        >
+                            {ssjNames.map((name, idx) => (
+                                <Tab key={idx} label={name} sx={{ fontWeight: 'bold', textTransform: 'capitalize' }} />
+                            ))}
+                        </Tabs>
+                    </Box>
+
+                    {/* Abas Secundárias (Categorias de Treino) */}
+                    <Box sx={{ bgcolor: isDark ? '#1e1e1e' : '#e0e0e0', boxShadow: 1 }}>
+                        <Tabs
+                            value={catTab}
+                            onChange={(e, val) => setCatTab(val)}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            allowScrollButtonsMobile
+                            textColor="secondary"
+                            indicatorColor="secondary"
+                        >
+                            {categories.map((cat, idx) => (
+                                <Tab key={idx} label={cat} sx={{ minWidth: 'auto', px: 2, fontWeight: 600 }} />
+                            ))}
+                        </Tabs>
+                    </Box>
+
+                    <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+                        {/* Barra Circular de Progresso do Nível SSJ */}
+                        <Box display="flex" flexDirection="column" alignItems="center" mb={3} mt={1}>
+                            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                                Progresso Global: {ssjNames[ssjTab]}
+                            </Typography>
+                            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                                <MaterialUI.CircularProgress
+                                    variant="determinate"
+                                    value={progressPercentage}
+                                    size={80}
+                                    thickness={5}
+                                    color={progressPercentage === 100 ? "success" : "primary"}
+                                />
+                                <Box sx={{ top: 0, left: 0, bottom: 0, right: 0, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Typography variant="caption" component="div" fontWeight="bold">
+                                        {`${progressPercentage}%`}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        {filteredWorkouts.length === 0 && (
+                            <Typography align="center" color="textSecondary" mt={4}>
+                                Nenhum treino cadastrado para {categories[catTab]} no nível {ssjNames[ssjTab]}.
+                            </Typography>
+                        )}
+
+                        <List>
+                            {filteredWorkouts.map((w) => {
+                                const isAllCompleted = w.completedSets.every(s => s === true);
+                                const cardColor = getDifficultyBgColor(w.difficulty || 1);
+                                const textColor = isDark ? '#ffffff' : '#000000';
+                                const metaColor = isDark ? '#81d4fa' : '#01579b';
+
+                                return (
+                                    <Card key={w.id} sx={{ mb: 2, borderRadius: 3, bgcolor: cardColor, color: textColor, transition: '0.3s', opacity: isAllCompleted ? 0.8 : 1 }}>
+                                        <CardContent sx={{ pb: '16px !important' }}>
+                                            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                                                <Box>
+                                                    <Box display="flex" alignItems="center" gap={1} mb={0.5} flexWrap="wrap">
+                                                        <Typography variant="h6" fontWeight="bold" sx={{ textDecoration: isAllCompleted ? 'line-through' : 'none' }}>
+                                                            {w.name}
+                                                        </Typography>
+                                                        <Chip label={`Cat: ${w.category}`} size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'rgba(255,255,255,0.25)', color: textColor, fontWeight: 'bold' }} />
+                                                    </Box>
+                                                    <Typography variant="body2" sx={{ color: metaColor, fontWeight: 'bold', mb: 1, textShadow: isDark ? '1px 1px 2px rgba(0,0,0,0.4)' : 'none' }}>
+                                                        Meta: {w.sets} séries de {w.reps} reps
+                                                    </Typography>
+                                                </Box>
+
+                                                <Box display="flex" flexDirection="column" alignItems="center" ml={1}>
+                                                    <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 'bold', mb: 0.5 }}>Carga(kg)</Typography>
+                                                    <input
+                                                        type="number"
+                                                        min="0" step="1"
+                                                        value={w.weight}
+                                                        onChange={(e) => updateProgression(w.id, parseInt(e.target.value) || 0)}
+                                                        style={{
+                                                            width: '40px', height: '28px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center',
+                                                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}`,
+                                                            borderRadius: '6px', backgroundColor: 'rgba(255,255,255,0.15)', color: 'inherit', outline: 'none'
+                                                        }}
+                                                    />
+                                                </Box>
+                                            </Box>
+
+                                            <Divider sx={{ my: 1.5, borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }} />
+
+                                            <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                                                {w.completedSets.map((isDone, index) => (
+                                                    <MaterialUI.FormControlLabel
+                                                        key={index}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={isDone}
+                                                                onChange={() => toggleSetComplete(w.id, index)}
+                                                                size="small"
+                                                                sx={{
+                                                                    py: 0, px: 0.5,
+                                                                    color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                                                                    '&.Mui-checked': { color: isDark ? '#fff' : '#000' }
+                                                                }}
+                                                            />
+                                                        }
+                                                        label={
+                                                            <Typography variant="body2" sx={{ fontWeight: isDone ? 'bold' : 'normal', opacity: isDone ? 1 : 0.85 }}>
+                                                                {index + 1}ª ({w.reps})
+                                                            </Typography>
+                                                        }
+                                                        sx={{ m: 0, pr: 1, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 1 }}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })}
+                        </List>
+                    </Box>
+                </Box>
+            );
+        };
+
+        // --- View 3: Gráficos e Histórico ---
+        const ChartComponent = ({ history, isDark, chartType = 'bar' }) => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                if (!chartRef.current) return;
+
+                // Agrupar histórico por dia (últimos 7 dias)
+                const last7Days = Array.from({ length: 7 }, (_, i) => {
+                    const d = new Date(); d.setDate(d.getDate() - i);
+                    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                }).reverse();
+
+                let dataCounts = [];
+                let datasetConfig = {};
+
+                if (chartType === 'bar') {
+                    // Gráfico de Volume (Séries Concluídas)
+                    dataCounts = last7Days.map(dayStr => {
+                        return history.filter(h => {
+                            const hDate = new Date(h.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                            return hDate === dayStr;
+                        }).length;
+                    });
+                    datasetConfig = {
+                        label: 'Séries Concluídas',
+                        data: dataCounts,
+                        backgroundColor: '#ff9800', // Laranja
+                        borderRadius: 4
+                    };
+                } else if (chartType === 'line') {
+                    // Gráfico de Ki/XP Ganho
+                    dataCounts = last7Days.map(dayStr => {
+                        return history.filter(h => {
+                            const hDate = new Date(h.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                            return hDate === dayStr;
+                        }).reduce((sum, h) => sum + (h.xpGained || 0), 0);
+                    });
+                    datasetConfig = {
+                        label: 'Ki (XP) Adquirido',
+                        data: dataCounts,
+                        borderColor: '#03a9f4', // Azul Claro
+                        backgroundColor: 'rgba(3, 169, 244, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    };
+                }
+
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: chartType,
+                    data: {
+                        labels: last7Days,
+                        datasets: [datasetConfig]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: isDark ? '#fff' : '#666' } },
+                            x: { ticks: { color: isDark ? '#fff' : '#666' } }
+                        }
+                    }
+                });
+
+                return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+            }, [history, isDark, chartType]);
+
+            return <canvas ref={chartRef} height="200" />;
+        };
+
+        const HistoryView = ({ history, isDark }) => {
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">Câmara do Tempo (Histórico)</Typography>
+
+                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                        <Grid item xs={12} md={6}>
+                            <Card sx={{ p: 1, borderRadius: 3, height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="subtitle2" gutterBottom>Volume (Séries Últimos 7 dias)</Typography>
+                                    <ChartComponent history={history} isDark={isDark} chartType="bar" />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Card sx={{ p: 1, borderRadius: 3, height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="subtitle2" gutterBottom>Elevação de Ki (XP Últimos 7 dias)</Typography>
+                                    <ChartComponent history={history} isDark={isDark} chartType="line" />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+
+                    <Typography variant="h6" gutterBottom>Registro de Batalha</Typography>
+                    <TableContainer component={Paper} sx={{ borderRadius: 3, maxHeight: '40vh' }}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Data</TableCell>
+                                    <TableCell>Série/Exercício</TableCell>
+                                    <TableCell align="right">+XP</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {history.length === 0 ? (
+                                    <TableRow><TableCell colSpan={3} align="center">Nenhum treino registrado.</TableCell></TableRow>
+                                ) : (
+                                    history.map((row, idx) => {
+                                        const d = new Date(row.date);
+                                        return (
+                                            <TableRow key={idx}>
+                                                <TableCell>{d.toLocaleDateString('pt-BR')}</TableCell>
+                                                <TableCell>{row.name} ({row.setIndex + 1}ª Série)</TableCell>
+                                                <TableCell align="right" sx={{ color: '#4caf50' }}>+{row.xpGained}</TableCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            );
+        };
+
+        // --- View 4: Tutoriais Youtube ---
+        const TutorialsView = () => {
+            const [tab, setTab] = useState(0);
+
+            const videos = {
+                0: [
+                    { title: "Flexão Perfeita para Iniciantes", id: "IODxDxX7oi4" },
+                    { title: "Como Começar na Barra Fixa", id: "eGo4IYPNBG4" }
+                ],
+                1: [
+                    { title: "Progressão para Muscle Up", id: "4x3A2I2cqg4" },
+                    { title: "Front Lever Passos Iniciais", id: "K_wEw33lOik" }
+                ]
+            };
+
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <Tabs value={tab} onChange={(e, val) => setTab(val)} centered>
+                        <Tab label="Iniciante" />
+                        <Tab label="Avançado" />
+                    </Tabs>
+                    <Box sx={{ p: 2, flexGrow: 1, overflowY: 'auto' }}>
+                        {videos[tab].map((vid, idx) => (
+                            <Card key={idx} sx={{ mb: 3, borderRadius: 3 }}>
+                                <CardContent>
+                                    <Typography variant="subtitle1" fontWeight="bold" mb={1}>{vid.title}</Typography>
+                                    <div className="video-container">
+                                        <iframe
+                                            src={`https://www.youtube.com/embed/${vid.id}`}
+                                            title={vid.title} frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen>
+                                        </iframe>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
+                </Box>
+            );
+        };
+
+        // --- View 5: Perfil ---
+        const ProfileSettingsView = ({ user, updateUser, handleExport, handleImport }) => (
+            <Box sx={{ p: 2 }}>
+                <Typography variant="h5" gutterBottom fontWeight="bold">Perfil & Dados</Typography>
+                <Card sx={{ mb: 3, borderRadius: 3 }}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>Medidas Corporais</Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField fullWidth label="Peso (kg)" type="number" value={user.weight} onChange={(e) => updateUser('weight', e.target.value)} />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField fullWidth label="Altura (cm)" type="number" value={user.height} onChange={(e) => updateUser('height', e.target.value)} />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+                <Card sx={{ borderRadius: 3 }}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>Planilhas & Backup</Typography>
+                        <Typography variant="body2" color="textSecondary" mb={2}>
+                            Seus dados são salvos no cache (LocalStorage). Você também pode exportar para Excel.
+                        </Typography>
+                        <Button variant="contained" color="primary" fullWidth startIcon={<MaterialUI.Icon>download</MaterialUI.Icon>} sx={{ mb: 2 }} onClick={handleExport}>
+                            Exportar (.xlsx)
+                        </Button>
+                        <Button variant="outlined" component="label" fullWidth startIcon={<MaterialUI.Icon>upload</MaterialUI.Icon>}>
+                            Importar (.xlsx)
+                            <input type="file" hidden accept=".xlsx, .xls" onChange={handleImport} />
+                        </Button>
+                    </CardContent>
+                </Card>
+            </Box>
+        );
+    </script>
+
+    <!-- MÓDULO 3: CONTROLLER & MAIN APP -->
+    <script type="text/babel">
+        function App() {
+            // Estados Principais
+            const [userModel, setUserModel] = useState(new User(75, 175, 120));
+            const [workouts, setWorkouts] = useState(WorkoutManager.getInitialWorkouts());
+            const [history, setHistory] = useState([]);
+            const [darkMode, setDarkMode] = useState(true);
+            const [currentRoute, setCurrentRoute] = useState(0);
+
+            // Efeito: Carregar do LocalStorage no Mount
+            useEffect(() => {
+                const savedData = StorageService.loadData();
+                if (savedData) {
+                    setUserModel(savedData.user);
+                    setWorkouts(savedData.workouts);
+                    setHistory(savedData.history);
+                }
+            }, []);
+
+            // Efeito: Salvar no LocalStorage sempre que os dados mudarem
+            useEffect(() => {
+                StorageService.saveData(userModel, workouts, history);
+            }, [userModel, workouts, history]);
+
+            // Controller: Alternar Série
+            const toggleSetComplete = (workoutId, setIndex) => {
+                let xpEarned = 0;
+
+                const newWorkouts = workouts.map(w => {
+                    if (w.id === workoutId) {
+                        const newSets = [...w.completedSets];
+                        const isCompleting = !newSets[setIndex];
+                        newSets[setIndex] = isCompleting;
+
+                        if (isCompleting) xpEarned = 5; // 5 XP por SÉRIE concluída
+
+                        // Atualiza mantendo o modelo orientado a objetos (ExercicioSayajin)
+                        return new ExercicioSayajin(w.id, w.category, w.name, w.sets, w.reps, w.weight, newSets, w.difficulty, w.ssjLevel);
+                    }
+                    return w;
+                });
+
+                setWorkouts(newWorkouts);
+
+                if (xpEarned > 0) {
+                    const w = workouts.find(w => w.id === workoutId);
+                    const historyEntry = {
+                        name: w.name,
+                        category: w.category,
+                        setIndex: setIndex,
+                        xpGained: xpEarned,
+                        date: new Date().toISOString()
+                    };
+                    setHistory([historyEntry, ...history]);
+                    setUserModel(new User(userModel.weight, userModel.height, userModel.xp + xpEarned));
+                }
+            };
+
+            const updateProgression = (id, newWeight) => {
+                setWorkouts(workouts.map(w => w.id === id ? new ExercicioSayajin(w.id, w.category, w.name, w.sets, w.reps, Number(newWeight), w.completedSets, w.difficulty, w.ssjLevel) : w));
+            };
+
+            const updateUser = (field, value) => {
+                const val = Number(value);
+                setUserModel(new User(
+                    field === 'weight' ? val : userModel.weight,
+                    field === 'height' ? val : userModel.height,
+                    userModel.xp
+                ));
+            };
+
+            const theme = useMemo(() => createTheme({
+                palette: {
+                    mode: darkMode ? 'dark' : 'light',
+                    primary: { main: '#ff9800' }, // Laranja Goku
+                    secondary: { main: '#03a9f4' }, // Azul Goku
+                    background: {
+                        default: darkMode ? '#121212' : '#f5f5f5',
+                        paper: darkMode ? '#1e1e1e' : '#ffffff',
+                    }
+                }
+            }), [darkMode]);
+
+            const renderView = () => {
+                switch (currentRoute) {
+                    case 0: return <DashboardView user={userModel} history={history} />;
+                    case 1: return <WorkoutView workouts={workouts} toggleSetComplete={toggleSetComplete} updateProgression={updateProgression} />;
+                    case 2: return <HistoryView history={history} isDark={darkMode} />;
+                    case 3: return <TutorialsView />;
+                    case 4: return <ProfileSettingsView user={userModel} updateUser={updateUser}
+                        handleExport={() => ExcelService.exportData(userModel, workouts, history)}
+                        handleImport={(e) => {
+                            if (e.target.files[0]) ExcelService.importData(e.target.files[0], (d) => {
+                                setUserModel(d.user); setWorkouts(d.workouts); setHistory(d.history);
+                            });
+                        }} />;
+                    default: return <DashboardView user={userModel} history={history} />;
+                }
+            };
+
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+                        <AppBar position="static" color="inherit" elevation={1}>
+                            <Toolbar>
+                                <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+                                    Calistenia<span style={{ color: theme.palette.primary.main }}>Pro</span>
+                                </Typography>
+                                <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
+                                    <MaterialUI.Icon>{darkMode ? 'light_mode' : 'dark_mode'}</MaterialUI.Icon>
+                                </IconButton>
+                            </Toolbar>
+                        </AppBar>
+
+                        <Box sx={{ flexGrow: 1, overflowY: 'auto', pb: 8 }}>
+                            <Container maxWidth="sm" disableGutters>
+                                {renderView()}
+                            </Container>
+                        </Box>
+
+                        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+                            <BottomNavigation showLabels value={currentRoute} onChange={(e, val) => setCurrentRoute(val)}>
+                                <BottomNavigationAction label="Painel" icon={<MaterialUI.Icon>dashboard</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Treino" icon={<MaterialUI.Icon>fitness_center</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Evolução" icon={<MaterialUI.Icon>bar_chart</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Tutoriais" icon={<MaterialUI.Icon>ondemand_video</MaterialUI.Icon>} />
+                                <BottomNavigationAction label="Perfil" icon={<MaterialUI.Icon>person</MaterialUI.Icon>} />
+                            </BottomNavigation>
+                        </Paper>
+                    </Box>
+                </ThemeProvider>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
