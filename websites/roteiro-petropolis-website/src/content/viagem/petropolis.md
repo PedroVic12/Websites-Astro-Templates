@@ -1,5 +1,12 @@
 ---
 title: "Petrópolis em 3 Dias"
+
+description: "Roteiro completo com logística, dicas e mapa"
+cover: "/images/petropolis-cover.jpg"
+tags: ["historia", "passeios", "final de semana"]
+published: true
+priority: 1
+
 destination: "Petrópolis"
 origin: "Niterói"
 base: "Loft no Centro"
