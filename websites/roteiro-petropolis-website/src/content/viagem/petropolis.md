@@ -66,9 +66,9 @@ days:
         icon: "🚗"
 
 images:
-  - "https://images.unsplash.com/photo-1590059533350-01053bb1082d?auto=format&fit=crop&w=1920&q=80"
-  - "https://images.unsplash.com/photo-1628178385038-f86a928926eb?auto=format&fit=crop&w=1920&q=80"
-  - "https://images.unsplash.com/photo-1543884814-c48c34fbc875?auto=format&fit=crop&w=1920&q=80"
+  - "https://www.cvc.com.br/dicas-de-viagem/wp-content/uploads/2018/04/petropolis-palcio-de-cristal-rio-de-janeiro.jpg"
+  - "https://cdn-clubecandeias.s3.sa-east-1.amazonaws.com/uploads/2016/08/a-beleza-de-petropolis.jpg"
+  - "https://vistadovale.com.br/pousada/wp-content/uploads/2013/12/bohemia.jpg"
 ---
 
 # 🏔️ Roteiro de Viagem: Petrópolis (3 dias)
