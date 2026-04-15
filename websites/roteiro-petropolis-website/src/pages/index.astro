@@ -1,0 +1,57 @@
+---
+import { getCollection } from "astro:content";
+import { render } from "astro:content";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import InfoCards from "../components/InfoCards.astro";
+import ItinerarySection from "../components/ItinerarySection.astro";
+import InsightSection from "../components/InsightSection.astro";
+import Navbar from "../components/Navbar.astro";
+import Toast from "../components/Toast.astro";
+
+//! npx astro add tailwind
+
+const posts = await getCollection("viagem");
+
+console.log(
+	"\n\nPosts encontrados:",
+	posts.map((p) => p.id),
+);
+
+const post = posts.find((p) => p.id === "petropolis");
+
+if (!post) {
+	throw new Error("\n\nPost não encontrado\n\n");
+}
+
+const { Content } = await render(post);
+const { data } = post;
+---
+
+<BaseLayout title={data.title}>
+	<Toast />
+	<Navbar />
+
+	<Hero images={data.images} />
+
+	<main class="max-w-6xl mx-auto pb-24">
+		<InfoCards logistics={data.logistics} base={data.base} />
+
+		<ItinerarySection days={data.days} />
+
+		<!-- <InsightSection>
+			<Content />
+		</InsightSection> -->
+	</main>
+
+	<div
+		class="fixed bottom-0 w-full p-4 bg-gradient-to-t from-black via-black/90 to-transparent md:hidden z-40"
+	>
+		<button
+			class="w-full bg-[#1e1e1e] border border-gray-700 text-white py-3 rounded-xl font-semibold shadow-lg active:bg-gray-800"
+		>
+			Abrir no Maps
+		</button>
+	</div>
+</BaseLayout>

@@ -1,0 +1,15 @@
+---
+import DayCard from "./DayCard.astro";
+
+const { days = [] } = Astro.props;
+---
+
+<div class="max-w-3xl mx-auto mt-20 px-4">
+    <h2 class="text-3xl font-bold text-center text-white mb-12">
+        Roteiro Otimizado (3 Dias)
+    </h2>
+
+    <div class="space-y-12 border-l-2 border-gray-800 ml-4 md:ml-0 relative">
+        {days.map((day: any) => <DayCard day={day} />)}
+    </div>
+</div>

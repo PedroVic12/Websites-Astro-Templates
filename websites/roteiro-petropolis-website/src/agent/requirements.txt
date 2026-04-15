@@ -1,0 +1,6 @@
+browser-use
+pandas
+schedule
+python-dotenv
+
+

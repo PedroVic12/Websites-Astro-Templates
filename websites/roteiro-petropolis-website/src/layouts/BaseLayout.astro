@@ -1,0 +1,64 @@
+---
+const { title = "Roteiro Petrópolis" } = Astro.props;
+import "../styles/global.css";
+---
+
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#121212" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+        <title>{title}</title>
+
+        <style is:global>
+            :root {
+                --brand-orange: #ff9800;
+                --brand-cyan: #00bcd4;
+                --brand-dark: #121212;
+                --brand-panel: #1e1e1e;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                background: var(--brand-dark);
+                color: #f3f4f6;
+                font-family: "Inter", sans-serif;
+                overflow-x: hidden;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #121212;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #374151;
+                border-radius: 10px;
+            }
+
+            ::selection {
+                background: rgba(255, 152, 0, 0.28);
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body class="bg-[#121212] text-gray-200">
+        <slot />
+    </body>
+</html>
