@@ -81,21 +81,21 @@ images:
 ## 📍 Informações Gerais
 
 - **Destino:** Petrópolis  
-- **Origem:** Niterói  
-- **Base:** Loft no Centro  
+- **Origem:** Niterói/Campo Grande - RJ
+- **Base:** Hotel 
 
 ---
 
 ## 🚗 Logística de deslocamento
 
-- **Rota:** Ponte Rio-Niterói → Linha Vermelha → BR-040  
+- **Rota:** Rodoviaria Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis 
 - **Tempo estimado:** 1h30 a 2h  
 
 ### ⚠️ Dicas
 
-- Sair cedo (antes de 8h ou depois de 10h)  
-- Evitar pico na ponte  
-- Tanque cheio antes da serra  
+- Sair cedo para não atrasar no onibus(antes de 8h)  
+- Evitar pico na ponte na volta
+
 
 ---
 
@@ -105,8 +105,9 @@ images:
 
 | Horário | Atividade |
 |--------|----------|
-| 🕒 Tarde | Museu Imperial, Palácio de Cristal, Catedral |
-| 🌙 Noite | Jantar no centro, caminhada leve |
+| Manha | Almoço + Hotel + Caminhada conhecendo a cidade
+| 🕒 Tarde | Museu Imperial, Palácio de Cristal, Catedral de São Pedro|
+| 🌙 Noite | Jantar no centro e Filme Romantico a noite|
 
 ---
 
