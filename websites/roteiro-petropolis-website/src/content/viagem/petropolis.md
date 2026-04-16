@@ -1,7 +1,7 @@
 ---
 title: "Petrópolis em 3 Dias"
 
-description: "Roteiro completo com logística, dicas e mapa"
+description: "Roteiro de Viagem completo com dicas de IA, planejament, preços, locomoção e mapa"
 cover: "/images/petropolis-cover.jpg"
 tags: ["historia", "passeios", "final de semana"]
 published: true
@@ -13,19 +13,19 @@ base: "Loft no Centro"
 
 logistics:
   route:
-    - "Ponte Rio-Niterói"
+    - "Rodoviaria Novo Rio (10h) -> Ponte Rio-Niterói"
     - "Linha Vermelha"
-    - "BR-040"
+    - "BR-040 - Serra"
   time: "1h30 a 2h"
   tips:
-    - "Sair antes de 8h ou após 10h"
-    - "Evitar pico na ponte"
-    - "Tanque cheio antes da serra"
+    - "Sair antes de 8h para não atrasar durante a viagem e buscar ter a mala pronta no dia anterior"
+    - "Chegar Cedo e Alimentado para chegar na Rodoviaria Novo Rio cedo de manha para chegar no horáriod de Almoço em Petropolis"
+    - "Reserva de dinheiro para comida e passeios. Roupas de frio para clima serrano"
 
 days:
   - day: 1
-    title: "Centro histórico (leve e estratégico)"
-    focus: "Chegar + adaptação + caminhada"
+    title: "Chegada na cidade"
+    focus: "Almoço + adaptação no Hotel + caminhada pela cidade"
     events:
       - time: "Tarde"
         desc: "Museu Imperial, Palácio de Cristal, Catedral São Pedro de Alcântara"
