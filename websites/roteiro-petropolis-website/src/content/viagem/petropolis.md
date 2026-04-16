@@ -27,6 +27,9 @@ days:
     title: "Chegada na cidade"
     focus: "Almoço + adaptação no Hotel + caminhada pela cidade"
     events:
+    - time: "Manhã"
+        desc: "Almoço na cidade, adaptação do Hotel, rapidinha no banheiro..."
+        icon: "🏛️"
       - time: "Tarde"
         desc: "Museu Imperial, Palácio de Cristal, Catedral São Pedro de Alcântara"
         icon: "🏛️"
