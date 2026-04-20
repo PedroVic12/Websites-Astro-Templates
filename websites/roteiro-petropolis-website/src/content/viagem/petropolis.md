@@ -9,7 +9,7 @@ priority: 1
 
 destination: "Petrópolis"
 origin: "Niterói"
-base: "Loft no Centro"
+base: "Hotel Kastel - Petrópolis, centro"
 
 logistics:
   route:
@@ -18,7 +18,7 @@ logistics:
     - "BR-040 - Serra"
   time: "1h30 a 2h"
   tips:
-    - "Sair antes de 8h para não atrasar durante a viagem e buscar ter a mala pronta no dia anterior"
+    - "Sair antes de 7h para não atrasar durante a viagem e buscar ter a mala pronta no dia anterior"
     - "Chegar Cedo e Alimentado para chegar na Rodoviária Novo Rio cedo de manha para chegar no horários de Almoço em Petrópolis"
     - "Reserva de dinheiro para comida e passeios. Roupas de frio para clima serrano"
 
