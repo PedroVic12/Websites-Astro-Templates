@@ -1,7 +1,7 @@
 ---
 title: "Petrópolis em 3 Dias"
 
-description: "Roteiro de Viagem completo com dicas de IA, planejament, preços, locomoção e mapa"
+description: "Roteiro de Viagem completo com dicas de IA, planejamento, preços, locomoção e mapa"
 cover: "/images/petropolis-cover.jpg"
 tags: ["historia", "passeios", "final de semana"]
 published: true
@@ -13,13 +13,13 @@ base: "Loft no Centro"
 
 logistics:
   route:
-    - "Rodoviaria Novo Rio (10h) -> Ponte Rio-Niterói"
+    - "Rodoviária Novo Rio (10h) -> Ponte Rio-Niterói"
     - "Linha Vermelha"
     - "BR-040 - Serra"
   time: "1h30 a 2h"
   tips:
     - "Sair antes de 8h para não atrasar durante a viagem e buscar ter a mala pronta no dia anterior"
-    - "Chegar Cedo e Alimentado para chegar na Rodoviaria Novo Rio cedo de manha para chegar no horáriod de Almoço em Petropolis"
+    - "Chegar Cedo e Alimentado para chegar na Rodoviária Novo Rio cedo de manha para chegar no horários de Almoço em Petrópolis"
     - "Reserva de dinheiro para comida e passeios. Roupas de frio para clima serrano"
 
 days:
@@ -27,7 +27,7 @@ days:
     title: "Chegada na cidade"
     focus: "Almoço + adaptação no Hotel + caminhada pela cidade"
     events:
-    - time: "Manhã"
+      - time: "Manhã"
         desc: "Almoço na cidade, adaptação do Hotel, rapidinha no banheiro..."
         icon: "🏛️"
       - time: "Tarde"
@@ -82,20 +82,19 @@ images:
 
 - **Destino:** Petrópolis  
 - **Origem:** Niterói/Campo Grande - RJ
-- **Base:** Hotel 
+- **Base:** Hotel
 
 ---
 
 ## 🚗 Logística de deslocamento
 
-- **Rota:** Rodoviaria Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis 
+- **Rota:** Rodoviaria Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis
 - **Tempo estimado:** 1h30 a 2h  
 
 ### ⚠️ Dicas
 
 - Sair cedo para não atrasar no onibus(antes de 8h)  
 - Evitar pico na ponte na volta
-
 
 ---
 
