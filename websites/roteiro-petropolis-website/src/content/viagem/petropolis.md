@@ -117,68 +117,90 @@ images:
   - "../../assets/casal_anime.jpg"
 ---
 
-# 🏔️ Roteiro de Viagem: Petrópolis (3 dias)
+## Checklist de Viagem – Petrópolis
 
-## 📍 Informações Gerais
+### 📍 Hospedagem: Hotel Kastel Petrópolis (até 25/04)
 
-- **Destino:** Petrópolis  
-- **Origem:** Niterói/Campo Grande - RJ
-- **Base:** Hotel Kastel Petrópolis no centro com Café da manha
+- [ ] 📅 DIA 21/04 – Chegada
 
----
+- Almoço: Princesa Isabel Gourmet (~R$60)
 
-## 🚗 Logística de deslocamento
+- Museu Imperial
 
-- **Rota:** Rodoviária Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis
-- **Tempo estimado:** 1h30 a 2h  
+- Catedral São Pedro de Alcântara
 
-### ⚠️ Dicas
+- Jantar: Massas Luigi (~R$70)
 
-- Sair cedo para não atrasar no ônibus(antes de 8h)  
-- Evitar pico na ponte na volta
+- Total estimado: R$130
 
----
+- [ ] 📅 DIA 22/04 – Home Office + Fondue
 
-## 🗓️ Dia 1: Centro histórico
+- Trabalho remoto no hotel
 
-**Foco:** Chegar + adaptação + caminhada  
+- Passeio: Palácio de Cristal
 
-| Horário | Atividade |
-|--------|----------|
-| Manha | Almoço + Hotel + Caminhada conhecendo a cidade
-| 🕒 Tarde | Museu Imperial, Palácio de Cristal, Catedral de São Pedro|
-| 🌙 Noite | Jantar no centro e Filme Romântico a noite|
+- Jantar especial: Restaurante Bordeaux (Fondue) (~R$220)
 
----
+- Total estimado: R$220
 
-## 🌄 Dia 2: Experiência completa
+- [ ] 📅 DIA 23/04 – Dia Cheio
 
-**Foco:** Natureza + carro  
+- Manhã: Museu de Cera de Petrópolis
 
-| Horário | Atividade |
-|--------|----------|
-| ☀️ Manhã | Parque Nacional da Serra dos Órgãos |
-| 🍽️ Almoço | Cervejaria Bohemia |
-| 🌤️ Tarde | Casa de Santos Dumont + cafés |
-| 🌙 Noite | Barzinho leve |
+- Almoço + Tour: Cervejaria Bohemia (~R$80)
 
-![Cervejaria](https://images.unsplash.com/photo-1543884814-c48c34fbc875?auto=format&fit=crop&w=1920&q=80)
+- Tarde: Casa de Santos Dumont
 
----
+- Tarde: Casa dos 7 Erros
 
-## 🌿 Dia 3: Chill + retorno
+- Jantar: Pizzaria Dom Gourmet (~R$80)
 
-**Foco:** Sem pressa  
+- Total estimado: R$160
 
-| Horário | Atividade |
-|--------|----------|
-| ☕ Manhã | Café + lembranças |
-| 🏛️ Opcional | Palácio Quitandinha |
-| 🚗 Retorno | Antes das 16h |
+- [ ] 📅 DIA 24/04 – Home Office + Cinema
 
----
+- Trabalho remoto no hotel
 
-## 🧠 Insight
+- Passeio: Rua Teresa
 
-> Petrópolis tem dois modos: turista básico e explorador.  
-> Esse roteiro te coloca no modo **explorador total**, usando o centro como base e o carro como vantagem estratégica.
+- Cinema: Cine Show Petrópolis (~R$50)
+
+- Jantar leve (~R$60)
+
+- Total estimado: R$110
+
+- [ ] 📅 DIA 25/04 – Saída
+
+- Café da manhã no Hotel Kastel
+
+- Check-out
+
+- Retorno
+
+## 💰 TOTAL FINAL
+
+- Dia 21: R$130
+
+- Dia 22: R$220
+
+- Dia 23: R$160
+
+- Dia 24: R$110
+
+- 👉 Total: ~R$620
+
+## ⚠️ Ajuste para bater R$600
+
+- Ir ao cinema sem combo → ~R$590
+
+- Reduzir bebida no fondue → ~R$600
+
+## 🎯 Benefícios
+
+- Checklist simples para acompanhar cada dia.
+
+- Passeios organizados por região.
+
+- Experiência completa (fondue + cinema).
+
+- Orçamento controlado.
