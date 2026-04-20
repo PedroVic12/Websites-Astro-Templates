@@ -76,24 +76,22 @@ images:
 
 # 🏔️ Roteiro de Viagem: Petrópolis (3 dias)
 
-![Vista da serra](https://images.unsplash.com/photo-1628178385038-f86a928926eb?auto=format&fit=crop&w=1920&q=80)
-
 ## 📍 Informações Gerais
 
 - **Destino:** Petrópolis  
 - **Origem:** Niterói/Campo Grande - RJ
-- **Base:** Hotel
+- **Base:** Hotel Kastel Petrópolis no centro com Café da manha
 
 ---
 
 ## 🚗 Logística de deslocamento
 
-- **Rota:** Rodoviaria Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis
+- **Rota:** Rodoviária Novo rio -> Ponte Rio-Niterói → Linha Vermelha → BR-040 (Serra) -> Petropolis
 - **Tempo estimado:** 1h30 a 2h  
 
 ### ⚠️ Dicas
 
-- Sair cedo para não atrasar no onibus(antes de 8h)  
+- Sair cedo para não atrasar no ônibus(antes de 8h)  
 - Evitar pico na ponte na volta
 
 ---
@@ -106,7 +104,7 @@ images:
 |--------|----------|
 | Manha | Almoço + Hotel + Caminhada conhecendo a cidade
 | 🕒 Tarde | Museu Imperial, Palácio de Cristal, Catedral de São Pedro|
-| 🌙 Noite | Jantar no centro e Filme Romantico a noite|
+| 🌙 Noite | Jantar no centro e Filme Romântico a noite|
 
 ---
 

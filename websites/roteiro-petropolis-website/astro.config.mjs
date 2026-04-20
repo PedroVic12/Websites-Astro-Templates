@@ -13,6 +13,7 @@ export default defineConfig({
   integrations: [
     AstroPWA({
       registerType: 'autoUpdate',
+      injectRegister: 'script', // Isso ajuda a injetar o registro automaticamente
       manifest: {
         name: 'Astro App Viagem',
         short_name: 'AstroApp',
