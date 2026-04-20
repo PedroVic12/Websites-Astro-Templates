@@ -31,32 +31,50 @@ const { images } = Astro.props;
         <span
             class="bg-[#ff9800]/20 text-[#ff9800] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-[0.25em] mb-3 inline-block border border-[#ff9800]/30"
         >
-            Modo OBSERVADOR
+            Modo VIAJANTE ATIVO
         </span>
 
         <h1
             class="text-4xl md:text-6xl font-black mb-4 tracking-wider leading-tight"
         >
-            Missão<br />Petrópolis
+            Viagem Para <br />Petrópolis
         </h1>
 
         <p class="text-lg md:text-xl text-orange-400 mb-8 font-light max-w-xl">
-            Roteiro de 3 dias otimizado. Base estratégica no centro e carro para
-            desbloquear a serra.
+            Roteiro de 4 dias otimizado com ChatGPT, Copilot, Gemini para
+            aproveitar ao máximo cada momento, sem perder tempo com pesquisas ou
+            planejamento.
         </p>
 
         <button
             class="bg-[#ff9800] hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full transition-transform hover:scale-105 shadow-lg shadow-orange-500/30"
             data-toast-trigger
+            data-scroll-target="#meu-roteiro"
             type="button"
         >
             Iniciar Roteiro
         </button>
+
+        <script>
+            const scrollBtn = document.querySelector("[data-scroll-target]");
+
+            scrollBtn?.addEventListener("click", () => {
+                const targetId = scrollBtn.getAttribute("data-scroll-target");
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: "smooth", // Deslize suave
+                        block: "start", // Alinha no topo
+                    });
+                }
+            });
+        </script>
     </div>
 
     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {
-            images.map((_, idx) => (
+            images.map((_: any, idx: number) => (
                 <button
                     type="button"
                     class:list={[

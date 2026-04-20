@@ -1,4 +1,6 @@
 ---
+import ButtonTailwind from "./UI/ButtonTailwind.astro";
+
 const { day } = Astro.props;
 ---
 
@@ -31,4 +33,17 @@ const { day } = Astro.props;
             ))
         }
     </div>
+
+    {/* 👇 Condicional: Só renderiza se for o Dia 1 */}
+    {
+        day.day === 1 && (
+            <div class=" w-full p-4 bg-gradient-to-t to-transparent md:hidden z-40">
+                <ButtonTailwind
+                    titulo="Ver mapa do Hotel"
+                    variant="primary"
+                    onClick="abrirNoMaps"
+                />
+            </div>
+        )
+    }
 </div>

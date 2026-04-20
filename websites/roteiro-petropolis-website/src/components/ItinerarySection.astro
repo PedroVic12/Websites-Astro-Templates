@@ -4,10 +4,15 @@ import DayCard from "./DayCard.astro";
 const { days = [] } = Astro.props;
 ---
 
-<div class="max-w-3xl mx-auto mt-20 px-4">
-    <h2 class="text-3xl font-bold text-center text-white mb-12">
-        Roteiro Otimizado (3 Dias)
+<div id="meu-roteiro" class="max-w-3xl mx-auto mt-20 px-4 scroll-mt-10">
+    <h2 class="text-3xl font-bold text-center text-white mb-6">
+        Roteiro de Viagem (4 Dias)
     </h2>
+
+    <p class="text-gray-300 text-center mb-6">
+        Descubra os melhores lugares para visitar em Petrópolis com nosso
+        roteiro de 4 dias.
+    </p>
 
     <div class="space-y-12 border-l-2 border-gray-800 ml-4 md:ml-0 relative">
         {days.map((day: any) => <DayCard day={day} />)}
