@@ -20,7 +20,7 @@ logistics:
   tips:
     - "Sair antes de 7h para não atrasar durante a viagem e buscar ter a mala pronta no dia anterior"
     - "Chegar Cedo e Alimentado para chegar na Rodoviária Novo Rio cedo de manha para chegar no horários de Almoço em Petrópolis"
-    - "Reserva de dinheiro para comida e passeios. Roupas de frio para clima serrano"
+    - "Reserva de dinheiro para comida e passeios. Roupas de frio para clima de Serra"
 
 days:
   - day: 1
@@ -64,7 +64,7 @@ days:
 
   - day: 3
     title: "(23/04): Quinta de Feriado como Turistas"
-    focus: "Fechar sem pressa"
+    focus: "Curtir sem pressa"
     events:
       - time: "Manhã"
         desc: "Café tranquilo, comprar lembranças"
@@ -73,7 +73,7 @@ days:
         desc: "Almoço + Tour + Casa de Santos Dumount + Casa dos 7 Erros"
         icon: "🏰"
       - time: "Jantar"
-        desc: "Petiscaria Lago Sul"
+        desc: "Churrascaria"
         icon: "🚗"
       - time: "Custo"
         desc: "R$ 70 Reais"
