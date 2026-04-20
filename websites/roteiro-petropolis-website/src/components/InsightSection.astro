@@ -1,24 +1,101 @@
-<section
-    class="mt-20 mx-4 md:mx-auto max-w-2xl bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl shadow-black/40"
->
-    <div
-        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#ff9800] to-[#00bcd4]"
-    >
-    </div>
+---
+import InsightMarkdown from "../components/InsightMarkdown.astro";
 
-    <span class="text-4xl mb-4 block">🧠</span>
-    <h3 class="text-2xl font-bold text-white mb-4">Insight Avançado</h3>
+const checklistMarkdown = `
 
-    <div
-        class="text-gray-400 mb-6 italic text-left md:text-center leading-relaxed"
-    >
-        <slot />
-    </div>
+## Checklist de Viagem – Petrópolis
 
-    <button
-        class="border border-orange-500/50 text-orange-500 hover:bg-orange-500 hover:text-black px-6 py-2 rounded-full font-medium transition-all"
-        type="button"
-    >
-        Ver Orçamento Detalhado
-    </button>
-</section>
+### 📍 Hospedagem: Hotel Kastel Petrópolis (até 25/04)
+
+- [ ] 📅 DIA 21/04 – Chegada
+
+- Almoço: Princesa Isabel Gourmet (~R$60)
+
+- Museu Imperial
+
+- Catedral São Pedro de Alcântara
+
+- Jantar: Massas Luigi (~R$70)
+
+- Total estimado: R$130
+
+- [ ] 📅 DIA 22/04 – Home Office + Fondue
+
+- Trabalho remoto no hotel
+
+- Passeio: Palácio de Cristal
+
+- Jantar especial: Restaurante Bordeaux (Fondue) (~R$220)
+
+- Total estimado: R$220
+
+- [ ] 📅 DIA 23/04 – Dia Cheio
+
+- Manhã: Museu de Cera de Petrópolis
+
+- Almoço + Tour: Cervejaria Bohemia (~R$80)
+
+- Tarde: Casa de Santos Dumont
+
+- Tarde: Casa dos 7 Erros
+
+- Jantar: Pizzaria Dom Gourmet (~R$80)
+
+- Total estimado: R$160
+
+- [ ] 📅 DIA 24/04 – Home Office + Cinema
+
+- Trabalho remoto no hotel
+
+- Passeio: Rua Teresa
+
+- Cinema: Cine Show Petrópolis (~R$50)
+
+- Jantar leve (~R$60)
+
+- Total estimado: R$110
+
+- [ ] 📅 DIA 25/04 – Saída
+
+- Café da manhã no Hotel Kastel
+
+- Check-out
+
+- Retorno
+
+## 💰 TOTAL FINAL
+
+- Dia 21: R$130
+
+- Dia 22: R$220
+
+- Dia 23: R$160
+
+- Dia 24: R$110
+
+- 👉 Total: ~R$620
+
+## ⚠️ Ajuste para bater R$600
+
+- Ir ao cinema sem combo → ~R$590
+
+- Reduzir bebida no fondue → ~R$600
+
+## 🎯 Benefícios
+
+- Checklist simples para acompanhar cada dia.
+
+- Passeios organizados por região.
+
+- Experiência completa (fondue + cinema).
+
+- Orçamento controlado.
+
+`;
+---
+
+<InsightMarkdown
+    content={checklistMarkdown}
+    title="Checklist de Viagem feito pelo ChatGPT"
+    emoji="✅"
+/>

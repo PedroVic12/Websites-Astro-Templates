@@ -1,8 +1,8 @@
 ---
 import ButtonTailwind from "./UI/ButtonTailwind.astro";
+import ModalConcluido from "./UI/ModalAnimado.astro";
 
 const { day } = Astro.props;
-// Geramos um ID único para este dia para salvar o progresso individualmente
 const dayId = `day-${day.day}`;
 ---
 
@@ -13,39 +13,49 @@ const dayId = `day-${day.day}`;
         {day.day}
     </div>
 
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-xl font-bold text-white">DIA {day.day} — {day.title}</h3>
-        <!-- Barra de Progresso do Dia -->
-        <div class="hidden sm:block w-32 bg-gray-800 h-2 rounded-full overflow-hidden border border-gray-700">
-            <div class="progress-bar bg-[#ff9800] h-full transition-all duration-500 w-0"></div>
+    <header
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
+    >
+        <div>
+            <h3 class="text-xl font-bold text-white uppercase tracking-wide">
+                DIA {day.day} — {day.title}
+            </h3>
+            <p class="text-orange-400 text-xs font-medium mt-1 uppercase">
+                🎯 Foco: {day.focus}
+            </p>
         </div>
-    </div>
-    
-    <p class="text-orange-400 text-sm font-medium mb-6 mt-1">
-        👉 Foco: {day.focus}
-    </p>
+
+        <div class="flex flex-col items-end gap-1.5">
+            <span class="text-[10px] text-gray-500 font-mono progress-text"
+                >0%</span
+            >
+            <div
+                class="w-32 bg-gray-900 h-1.5 rounded-full overflow-hidden border border-gray-800"
+            >
+                <div
+                    class="progress-bar bg-[#ff9800] h-full transition-all duration-700 w-0"
+                >
+                </div>
+            </div>
+        </div>
+    </header>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {
             day.events.map((ev: any, index: number) => (
-                <label class="cursor-pointer group">
-                    <div class="event-card bg-[#1e1e1e]/70 border border-gray-800 p-4 rounded-xl flex items-start gap-4 shadow-lg transition-all hover:border-orange-500/50 has-[:checked]:border-[#ff9800] has-[:checked]:bg-[#ff9800]/5">
-                        
-                        <!-- Checkbox customizado -->
-                        <div class="relative flex items-center mt-1">
-                            <input 
-                                type="checkbox" 
-                                class="event-checkbox peer appearance-none w-5 h-5 border-2 border-gray-600 rounded-md checked:bg-[#ff9800] checked:border-[#ff9800] transition-all"
-                                data-index={index}
-                            />
-                            <svg class="absolute w-3.5 h-3.5 text-black font-bold hidden peer-checked:block left-[3px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
+                <label class="cursor-pointer group block">
+                    <div class="h-full bg-[#1e1e1e]/40 border border-gray-800 p-4 rounded-2xl flex items-start gap-4 transition-all hover:bg-[#1e1e1e]/60 has-[:checked]:border-[#ff9800]/40 has-[:checked]:bg-[#ff9800]/5">
+                        <input
+                            type="checkbox"
+                            class="event-checkbox peer appearance-none w-5 h-5 border-2 border-gray-700 rounded-lg checked:bg-[#ff9800] checked:border-[#ff9800] transition-all mt-1"
+                            data-index={index}
+                        />
 
-                        <div class="peer-checked:opacity-50 transition-opacity">
-                            <h4 class="text-[#ff9800] font-bold text-sm mb-1 group-has-[:checked]:line-through">
+                        <div class="flex-1 peer-checked:opacity-30 transition-opacity">
+                            <h4 class="text-[#ff9800] font-bold text-xs mb-1 group-has-[:checked]:line-through">
                                 {ev.time}
                             </h4>
-                            <p class="text-gray-300 text-sm leading-relaxed group-has-[:checked]:text-gray-500">
+                            <p class="text-gray-300 text-sm leading-snug">
                                 {ev.desc}
                             </p>
                         </div>
@@ -55,51 +65,161 @@ const dayId = `day-${day.day}`;
         }
     </div>
 
-    {
-        day.day === 1 && (
-            <div class="w-full p-4 mt-4 bg-gradient-to-t to-transparent md:hidden z-40">
-                <ButtonTailwind
-                    titulo="Ver mapa do Hotel"
-                    variant="primary"
-                    onClick="abrirNoMaps"
-                />
-            </div>
-        )
-    }
+    <div class="flex justify-center items-center mt-6 md:hidden">
+        <ModalConcluido id={`modal-${dayId}`} />
+    </div>
 </div>
 
+{
+    day.day === 1 && (
+        <div class="mt-8 md:hidden">
+            <ButtonTailwind
+                titulo="Ver mapa do Hotel"
+                variant="primary"
+                onClick="abrirNoMaps"
+            />
+        </div>
+    )
+}
+
 <script>
-    function updateProgress(container: HTMLElement) {
-        const checkboxes = container.querySelectorAll('.event-checkbox') as NodeListOf<HTMLInputElement>;
-        const progressBar = container.querySelector('.progress-bar') as HTMLElement;
-        const dayId = container.getAttribute('data-day-id');
-        
-        const total = checkboxes.length;
-        const checked = Array.from(checkboxes).filter(i => i.checked).length;
-        const percentage = total > 0 ? (checked / total) * 100 : 0;
+    // --- LÓGICA DE BACKEND (STORAGE) ---
+    const Storage = {
+        save: (id: string, state: boolean[]) =>
+            localStorage.setItem(`progresso-${id}`, JSON.stringify(state)),
+        get: (id: string) =>
+            JSON.parse(localStorage.getItem(`progresso-${id}`) || "[]"),
+    };
 
-        if (progressBar) progressBar.style.width = `${percentage}%`;
+    // --- MOTOR DE CONFETES (JS PURO) ---
+    const ConfettiEngine = {
+        particles: [] as any[],
+        canvas: null as HTMLCanvasElement | null,
+        ctx: null as CanvasRenderingContext2D | null,
 
-        // Salvar no LocalStorage
-        const state = Array.from(checkboxes).map(i => i.checked);
-        localStorage.setItem(`progresso-${dayId}`, JSON.stringify(state));
+        init() {
+            this.canvas = document.getElementById(
+                "confetti-canvas",
+            ) as HTMLCanvasElement;
+            if (!this.canvas) return;
+            this.ctx = this.canvas.getContext("2d");
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        },
+
+        create(x: number, y: number) {
+            const colors = ["#ff9800", "#ffffff", "#666666"];
+            for (let i = 0; i < 100; i++) {
+                this.particles.push({
+                    x,
+                    y,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 7 + 3,
+                    speedX: (Math.random() - 0.5) * 12,
+                    speedY: (Math.random() - 0.5) * 12 - 5,
+                    gravity: 0.2,
+                    opacity: 1,
+                });
+            }
+            this.animate();
+        },
+
+        animate() {
+            if (!this.ctx || !this.canvas) return;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+            this.particles.forEach((p, i) => {
+                p.speedY += p.gravity;
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.opacity -= 0.01;
+
+                this.ctx!.fillStyle = p.color;
+                this.ctx!.globalAlpha = p.opacity;
+                this.ctx!.fillRect(p.x, p.y, p.size, p.size);
+
+                if (p.opacity <= 0) this.particles.splice(i, 1);
+            });
+
+            if (this.particles.length > 0) {
+                requestAnimationFrame(() => this.animate());
+            }
+        },
+    };
+
+    // --- CONTROLADOR DE UI ---
+    const UI = {
+        updateProgress(container: HTMLElement) {
+            const checks = container.querySelectorAll(
+                ".event-checkbox",
+            ) as NodeListOf<HTMLInputElement>;
+            const bar = container.querySelector(".progress-bar") as HTMLElement;
+            const text = container.querySelector(
+                ".progress-text",
+            ) as HTMLElement;
+            const dayId = container.getAttribute("data-day-id") || "";
+
+            const state = Array.from(checks).map((c) => c.checked);
+            const percent =
+                (state.filter(Boolean).length / checks.length) * 100;
+
+            if (bar) bar.style.width = `${percent}%`;
+            if (text) text.textContent = `${Math.round(percent)}%`;
+
+            Storage.save(dayId, state);
+
+            if (percent === 100) {
+                const modal = document.getElementById(
+                    `modal-${dayId}`,
+                ) as HTMLDialogElement;
+                modal?.showModal();
+                ConfettiEngine.create(
+                    window.innerWidth / 2,
+                    window.innerHeight / 2,
+                );
+            }
+        },
+    };
+
+    // --- INICIALIZAÇÃO ---
+    function init() {
+        ConfettiEngine.init();
+
+        document
+            .querySelectorAll(".day-container")
+            .forEach((container: any) => {
+                const dayId = container.getAttribute("data-day-id");
+                const checks = container.querySelectorAll(".event-checkbox");
+                const saved = Storage.get(dayId);
+
+                checks.forEach((cb: HTMLInputElement, idx: number) => {
+                    cb.checked = !!saved[idx];
+                    cb.addEventListener("change", () =>
+                        UI.updateProgress(container),
+                    );
+                });
+
+                container
+                    .querySelector("[data-close-modal]")
+                    ?.addEventListener("click", () => {
+                        container.querySelector("dialog")?.close();
+                    });
+
+                // Sincroniza estado inicial sem disparar o modal
+                const state = Array.from(checks).map((c: any) => c.checked);
+                const percent =
+                    (state.filter(Boolean).length / checks.length) * 100;
+                const bar = container.querySelector(
+                    ".progress-bar",
+                ) as HTMLElement;
+                const text = container.querySelector(
+                    ".progress-text",
+                ) as HTMLElement;
+                if (bar) bar.style.width = `${percent}%`;
+                if (text) text.textContent = `${Math.round(percent)}%`;
+            });
     }
 
-    // Inicialização
-    document.querySelectorAll('.day-container').forEach((container: any) => {
-        const dayId = container.getAttribute('data-day-id');
-        const checkboxes = container.querySelectorAll('.event-checkbox');
-        const saved = JSON.parse(localStorage.getItem(`progresso-${dayId}`) || '[]');
-
-        checkboxes.forEach((cb: HTMLInputElement, index: number) => {
-            // Restaurar estado salvo
-            if (saved[index]) cb.checked = true;
-
-            // Escutar mudanças
-            cb.addEventListener('change', () => updateProgress(container));
-        });
-
-        // Atualiza barra inicialmente
-        updateProgress(container);
-    });
+    init();
+    window.addEventListener("resize", () => ConfettiEngine.init());
 </script>
