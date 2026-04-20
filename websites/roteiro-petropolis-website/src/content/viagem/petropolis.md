@@ -1,7 +1,7 @@
 ---
 title: "Petrópolis em 3 Dias"
 
-description: "Roteiro de Viagem completo com dicas de IA, planejamento, preços, locomoção e mapa"
+description: "Roteiro de Viagem completo com dicas de IA, planejamento, preços, checklists e links externos para facilitar na imersão dentro da cidade histórica"
 cover: "/images/petropolis-cover.jpg"
 tags: ["historia", "passeios", "final de semana"]
 published: true

@@ -2,6 +2,7 @@
 import ImageContainer from "./UI/ImageContainer.astro";
 
 import img_url_bus from "../assets/Passagem_onibus.jpg";
+import ButtonTailwind from "./UI/ButtonTailwind.astro";
 
 const { logistics, base } = Astro.props;
 ---
@@ -48,6 +49,8 @@ const { logistics, base } = Astro.props;
             Café da manhã incluso, localização no Centro de Petrópolis e fácil acesso
             às principais atrações que vamos fazer na cidade.
         </p>
+
+        <ButtonTailwind titulo="Site do Hotel" onClick="abrirSiteHotel" />
     </div>
 
     <div
