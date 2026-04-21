@@ -26,9 +26,9 @@ function markdownToHtml(md: string): string {
         // Listas com checkboxes
         .replace(
             /^- \[ \] (.*?)$/gm,
-            '<div class="flex items-start gap-3 mb-2"><input type="checkbox" class="mt-1" /><span class="text-gray-300">$1</span></div>',
+            '<div class="flex items-start gap-3 mb-2"><input type="checkbox" class="mt-1" /><span class="text-lg text-gray-300">$1</span></div>',
         )
-        .replace(/^- (.*?)$/gm, '<li class="text-gray-300 ml-4">$1</li>')
+        .replace(/^- (.*?)$/gm, '<li class="text-gray-400 ml-16">$1</li>')
         // Negrito
         .replace(
             /\*\*(.*?)\*\*/g,
