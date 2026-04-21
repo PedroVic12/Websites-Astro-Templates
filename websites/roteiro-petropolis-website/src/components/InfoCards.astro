@@ -3,6 +3,7 @@ import ImageContainer from "./UI/ImageContainer.astro";
 
 import img_url_bus from "../assets/Passagem_onibus.jpg";
 import ButtonTailwind from "./UI/ButtonTailwind.astro";
+import img_url_restaurantes from "../assets/Restaurantes.jpg";
 
 const { logistics, base } = Astro.props;
 ---
@@ -64,7 +65,7 @@ const { logistics, base } = Astro.props;
             <span class="text-3xl">⚠️</span>
             <h3 class="text-xl font-bold text-white">Dicas Cruciais</h3>
         </div>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 mb-4">
             {
                 logistics.tips.map((tip: any) => (
                     <span class="text-xs bg-yellow-900/20 text-yellow-500 border border-yellow-700/30 px-3 py-1.5 rounded-md">
@@ -73,5 +74,11 @@ const { logistics, base } = Astro.props;
                 ))
             }
         </div>
+
+        <ImageContainer
+            titulo="Restaurantes"
+            descricao="Pesquisa feita de lugares que aceitam o Sodexo."
+            img_url={img_url_restaurantes.src}
+        />
     </div>
 </div>
