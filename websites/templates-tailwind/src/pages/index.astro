@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import { render } from "astro:content";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import InfoCards from "../components/InfoCards.astro";
+import ItinerarySection from "../components/ItinerarySection.astro";
+import InsightSection from "../components/InsightSection.astro";
+import Navbar from "../components/Navbar.astro";
+import Toast from "../components/Toast.astro";
+
+//! npx astro add tailwind
+
+// npm install -D @vite-pwa/astro
+
+const posts = await getCollection("viagem");
+
+console.log(
+	"\n\nPosts encontrados:",
+	posts.map((p) => p.id),
+);
+
+const post = posts.find((p) => p.id === "petropolis");
+
+if (!post) {
+	throw new Error("\n\nPost não encontrado\n\n");
+}
+
+const { Content } = await render(post);
+const { data } = post;
+
+const url_hotel_map = "https://maps.app.goo.gl/NDei3sMZ7Sp9s2Cd8";
+---
+
+<BaseLayout title={data.title}>
+	<!-- Este script cria a ponte entre o botão e o navegador -->
+	<script is:inline define:vars={{ url_hotel_map }}>
+		window.abrirNoMaps = () => {
+			window.open(url_hotel_map, "_blank");
+		};
+
+		window.abrirSiteHotel = () => {
+			window.open(
+				"https://www.kastelhoteis.com.br/hoteis-e-pousadas/kastel-petropolis",
+				"_blank",
+			);
+		};
+
+		window.abrirRestaurantes = () => {
+			window.open(
+				"https://soupetropolis.com/2021/06/19/7-restaurantes-para-comer-um-bom-fondue-em-petropolis/",
+				"_blank",
+			);
+		};
+	</script>
+
+	<Toast />
+	<Navbar />
+
+	<Hero images={data.images} />
+
+	<main class="max-w-6xl mx-auto pb-24">
+		<InfoCards logistics={data.logistics} base={data.base} />
+
+		<ItinerarySection days={data.days} />
+
+		<InsightSection>
+			<Content />
+		</InsightSection>
+	</main>
+</BaseLayout>
