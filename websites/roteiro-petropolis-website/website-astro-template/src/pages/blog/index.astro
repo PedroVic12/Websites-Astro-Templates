@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getBlogPosts } from '../../viewmodels/blogViewModel';
+
+const posts = await getBlogPosts();
+---
+
+<BaseLayout title="Blog | ViajaTech">
+    <div class="max-w-7xl mx-auto px-4 py-20">
+        <header class="mb-16 text-center">
+            <h1 class="text-5xl font-black mb-4">Nosso Blog</h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto">
+                Dicas, roteiros e histórias para inspirar sua próxima aventura.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map(post => (
+                <BlogCard post={post} />
+            ))}
+        </div>
+    </div>
+</BaseLayout>

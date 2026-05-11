@@ -1,0 +1,41 @@
+---
+import MUIButton from "./UI/MUIButton.tsx";
+
+const { day, totalDays } = Astro.props;
+---
+
+<div class="relative pl-12 pb-12 last:pb-0 group">
+    <!-- Linha Vertical -->
+    {day.day !== totalDays && (
+        <div class="absolute left-[15px] top-8 bottom-0 w-[2px] bg-gray-800 group-hover:bg-[#ff9800]/30 transition-colors"></div>
+    )}
+
+    <!-- Círculo do Dia -->
+    <div class="absolute left-0 top-0 w-8 h-8 bg-black border-2 border-[#ff9800] rounded-full flex items-center justify-center z-10 shadow-[0_0_15px_rgba(255,152,0,0.3)]">
+        <span class="text-xs font-bold text-[#ff9800]">{day.day}</span>
+    </div>
+
+    <div class="bg-[#1e1e1e]/40 border border-gray-800 p-6 rounded-3xl hover:border-[#ff9800]/30 transition-all">
+        <header class="mb-6">
+            <h3 class="text-xl font-bold text-white mb-1 uppercase tracking-tight">
+                {day.title}
+            </h3>
+            <p class="text-[#ff9800] text-[10px] font-bold uppercase tracking-widest">
+                🎯 Foco: {day.focus}
+            </p>
+        </header>
+
+        <div class="space-y-4">
+            {day.events.map((ev: any) => (
+                <div class="flex gap-4 items-start">
+                    <span class="text-[#ff9800] font-mono text-xs mt-1">{ev.time}</span>
+                    <p class="text-gray-400 text-sm leading-relaxed">{ev.desc}</p>
+                </div>
+            ))}
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <MUIButton label="Concluir Dia" variant="outlined" client:load />
+        </div>
+    </div>
+</div>

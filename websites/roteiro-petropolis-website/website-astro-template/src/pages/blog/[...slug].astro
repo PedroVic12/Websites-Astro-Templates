@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog');
+    return posts.map(post => ({
+        params: { slug: post.id },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, date, author, image } = post.data;
+---
+
+<BaseLayout title={`${title} | ViajaTech`}>
+    <article class="max-w-4xl mx-auto px-4 py-20">
+        <header class="mb-12 text-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <span class="px-3 py-1 bg-[#ff9800]/10 text-[#ff9800] text-xs font-bold rounded-full uppercase tracking-widest">{author}</span>
+                <span class="text-gray-600">•</span>
+                <span class="text-gray-500 font-mono text-xs">{new Date(date).toLocaleDateString('pt-BR')}</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black mb-8 leading-tight">{title}</h1>
+            {image && <img src={image} alt={title} class="w-full rounded-3xl mb-12 shadow-2xl" />}
+        </header>
+
+        <div class="prose prose-invert prose-orange max-w-none 
+            [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:text-white
+            [&_p]:text-gray-400 [&_p]:leading-relaxed [&_p]:mb-6 [&_p]:text-lg
+            [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-6 [&_li]:text-gray-400 [&_li]:mb-2
+            [&_strong]:text-white [&_strong]:font-bold">
+            <Content />
+        </div>
+
+        <div class="mt-20 p-8 bg-[#1e1e1e]/40 border border-gray-800 rounded-3xl flex items-center gap-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#ff9800] to-orange-600 rounded-full flex items-center justify-center text-2xl">
+                👤
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg">Escrito por {author}</h4>
+                <p class="text-gray-500 text-sm">Especialista em viagens e tecnologia, explorando o mundo um código de cada vez.</p>
+            </div>
+        </div>
+    </article>
+</BaseLayout>

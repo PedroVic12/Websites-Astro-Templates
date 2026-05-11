@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getBlogPosts } from '../viewmodels/blogViewModel';
+
+const posts = await getBlogPosts();
+---
+
+<BaseLayout title="ViajaTech | Seu Roteiro Inteligente">
+    <Hero 
+        title="Explore o Mundo com Inteligência" 
+        subtitle="Roteiros personalizados, dicas exclusivas e as melhores experiências de viagem, tudo em um só lugar."
+    />
+
+    <section class="max-w-7xl mx-auto px-4 py-20">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-bold mb-2">Últimos Posts</h2>
+                <p class="text-gray-500">Fique por dentro das novidades e dicas de viagem.</p>
+            </div>
+            <a href="/blog" class="text-[#ff9800] font-bold hover:underline">Ver todos →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.slice(0, 3).map(post => (
+                <BlogCard post={post} />
+            ))}
+        </div>
+    </section>
+</BaseLayout>
