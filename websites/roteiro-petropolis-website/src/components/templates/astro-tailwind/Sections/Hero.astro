@@ -1,5 +1,5 @@
 ---
-const { images } = Astro.props;
+const { images, title = "Petrópolis" } = Astro.props;
 ---
 
 <section
@@ -37,13 +37,11 @@ const { images } = Astro.props;
         <h1
             class="text-4xl md:text-6xl font-black mb-4 tracking-wider leading-tight"
         >
-            Viagem Para <br />Petrópolis
+            Viagem Para <br />{title}
         </h1>
 
         <p class="text-lg md:text-xl text-orange-400 mb-8 font-light max-w-xl">
-            Roteiro de 4 dias otimizado com ChatGPT, Copilot, Gemini para
-            aproveitar ao máximo cada momento, sem perder tempo com pesquisas ou
-            planejamento.
+            Roteiro otimizado com IA para aproveitar ao máximo cada momento.
         </p>
 
         <button
@@ -54,22 +52,6 @@ const { images } = Astro.props;
         >
             Iniciar Roteiro
         </button>
-
-        <script>
-            const scrollBtn = document.querySelector("[data-scroll-target]");
-
-            scrollBtn?.addEventListener("click", () => {
-                const targetId = scrollBtn.getAttribute("data-scroll-target");
-                const targetElement = document.querySelector(targetId);
-
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: "smooth", // Deslize suave
-                        block: "start", // Alinha no topo
-                    });
-                }
-            });
-        </script>
     </div>
 
     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
@@ -104,19 +86,16 @@ const { images } = Astro.props;
                 slide.classList.toggle("opacity-100", i === index);
                 slide.classList.toggle("opacity-0", i !== index);
             });
-
             dots.forEach((dot, i) => {
                 dot.classList.toggle("w-8", i === index);
                 dot.classList.toggle("bg-[#ff9800]", i === index);
                 dot.classList.toggle("w-2.5", i !== index);
                 dot.classList.toggle("bg-white/50", i !== index);
             });
-
             current = index;
         };
 
         const next = () => show((current + 1) % slides.length);
-
         let timer = window.setInterval(next, 5000);
 
         dots.forEach((dot, index) => {
@@ -131,9 +110,7 @@ const { images } = Astro.props;
             button.addEventListener("click", () => {
                 window.dispatchEvent(
                     new CustomEvent("travel:toast", {
-                        detail: {
-                            message: "Roteiro sincronizado com o teu GPS! 🚗",
-                        },
+                        detail: { message: "Roteiro sincronizado com o teu GPS! 🚗" },
                     }),
                 );
             });

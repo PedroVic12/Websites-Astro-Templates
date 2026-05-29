@@ -29,15 +29,19 @@ const url_hotel = data.links?.hotel || "#";
 	};
 </script>
 
-<div class="template-viagem-v1 font-sans antialiased text-gray-900 bg-gray-50/30">
+<!-- Fundo Dark Futurista: Preto com nuances de Roxo e Azul -->
+<div class="template-viagem-v1 font-sans antialiased text-gray-100 bg-[#050505] bg-gradient-to-br from-black via-[#0a051a] to-[#050a1a] min-h-screen">
 	<Toast />
 	<Navbar />
 
-	<Hero images={data.images} />
+	<Hero images={data.images} title={data.destination} />
 
 	<main class="max-w-6xl mx-auto pb-24 px-4">
 		<InfoCards logistics={data.logistics} base={data.base} />
-		<ItinerarySection days={data.days} />
+		
+		<div class="mt-20">
+			<ItinerarySection days={data.days} />
+		</div>
 		
 		<InsightSection>
 			<Content />

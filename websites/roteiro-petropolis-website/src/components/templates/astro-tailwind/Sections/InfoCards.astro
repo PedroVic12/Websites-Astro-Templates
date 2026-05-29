@@ -1,9 +1,10 @@
 ---
-import ImageContainer from "./UI/ImageContainer.astro";
+import ImageContainer from "../UI/ImageContainer.astro";
+import ButtonTailwind from "../UI/ButtonTailwind.astro";
 
-import img_url_bus from "../assets/Passagem_onibus.jpg";
-import ButtonTailwind from "./UI/ButtonTailwind.astro";
-import img_url_restaurantes from "../assets/Restaurantes.jpg";
+// Ajustando caminhos para a pasta de assets (4 níveis acima)
+import img_url_bus from "../../../../assets/Passagem_onibus.jpg";
+import img_url_restaurantes from "../../../../assets/Restaurantes.jpg";
 
 const { logistics, base } = Astro.props;
 ---
@@ -28,11 +29,10 @@ const { logistics, base } = Astro.props;
         </p>
     </div>
 
-    <!-- Grid Responsivo: 1 coluna no mobile, 2 no tablet, 3 no desktop -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ImageContainer
-            titulo="Rodoviária Novo Rio -> Petrópolis"
-            descricao="Localização estratégica no centro para os passeios. Check-in às 14h, check-out às 12h."
+            titulo="Transporte"
+            descricao="Localização estratégica no centro para os passeios."
             img_url={img_url_bus.src}
             img_height="500px"
         />
@@ -47,15 +47,10 @@ const { logistics, base } = Astro.props;
         </div>
         <p class="text-gray-300">
             <strong class="text-[#00bcd4] block mb-2 text-lg">{base}</strong>
-            Café da manhã incluso, localização no Centro de Petrópolis e fácil acesso
-            às principais atrações que vamos fazer na cidade.
+            Café da manhã incluso e fácil acesso às principais atrações.
         </p>
 
         <ButtonTailwind titulo="Site do Hotel" onClick="abrirSiteHotel" />
-        <ButtonTailwind
-            titulo="Restaurantes da Cidade"
-            onClick="abrirRestaurantes"
-        />
     </div>
 
     <div
@@ -77,7 +72,7 @@ const { logistics, base } = Astro.props;
 
         <ImageContainer
             titulo="Restaurantes"
-            descricao="Pesquisa feita de lugares que aceitam o Sodexo."
+            descricao="Opções locais selecionadas."
             img_url={img_url_restaurantes.src}
         />
     </div>

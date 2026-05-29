@@ -11,6 +11,10 @@ destination: "Petrópolis"
 origin: "Niterói"
 base: "Hotel Kastel - Petrópolis, centro"
 
+links:
+  maps: "https://maps.app.goo.gl/NDei3sMZ7Sp9s2Cd8"
+  hotel: "https://www.kastelhoteis.com.br/hoteis-e-pousadas/kastel-petropolis"
+
 logistics:
   route:
     - "Rodoviária Novo Rio (10h) -> Ponte Rio-Niterói"
@@ -60,8 +64,6 @@ days:
         desc: "R$ 60 Reais"
         icon: "💵"
 
-
-
   - day: 3
     title: "(23/04): Quinta de Feriado como Turistas"
     focus: "Curtir sem pressa"
@@ -79,41 +81,9 @@ days:
         desc: "R$ 210 Reais"
         icon: "💵"
 
-  - day: 4
-    title: "(24/04): Sextou"
-    focus: "Conhecer todos os passeios restantes + Cineminha"
-    events:
-      - time: "Manhã"
-        desc: "Café da manha com putarias diferentes fora da rotina + Home Office "
-        icon: "🛍️"
-      - time: "Tarde"
-        desc: "Rua Teresa + Lembrancinhas"
-        icon: "🏰"
-      - time: "Noite"
-        desc: "Cinema: Mario Galaxy ou Michael Jackson"
-        icon: "🚗"
-      - time: "Noite"
-        desc: "Jantar: Hamburgueria Local"
-        icon: "🚗"
-      - time: "Custo"
-        desc: "R$ 50 + 70 = 120 Reais"
-        icon: "💵"
-
-  - day: 5
-    title: "(25/04) - Sábado, o retorno"
-    focus: "Arrumar mala, acordar cedo e se preparar pra voltar para Campo Grande no RJ"
-    events:
-      - time: "Manhã"
-        desc: "Café da manha + Checkout "
-        icon: "🛍️"
-      - time: "Tarde"
-        desc: "11:00 no Ônibus para a Rodoviária novo Rio para depois ir para Campo Grande RJ"
-        icon: "🛍️"
-
 images:
+  - "/pvv.jpg"
+  - "/casal_anime.jpg"
   - "https://www.cvc.com.br/dicas-de-viagem/wp-content/uploads/2018/04/petropolis-palcio-de-cristal-rio-de-janeiro.jpg"
   - "https://cdn-clubecandeias.s3.sa-east-1.amazonaws.com/uploads/2016/08/a-beleza-de-petropolis.jpg"
-  - "https://vistadovale.com.br/pousada/wp-content/uploads/2013/12/bohemia.jpg"
-  - "pvv.jpg"
-  - "casal_anime.jpg"
 ---
