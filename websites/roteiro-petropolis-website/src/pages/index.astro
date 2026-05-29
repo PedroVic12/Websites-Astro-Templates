@@ -1,72 +1,50 @@
 ---
 import { getCollection } from "astro:content";
-import { render } from "astro:content";
-
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../components/Hero.astro";
-import InfoCards from "../components/InfoCards.astro";
-import ItinerarySection from "../components/ItinerarySection.astro";
-import InsightSection from "../components/InsightSection.astro";
 import Navbar from "../components/Navbar.astro";
-import Toast from "../components/Toast.astro";
 
-//! npx astro add tailwind
-
-// npm install -D @vite-pwa/astro
-
-const posts = await getCollection("viagem");
-
-console.log(
-	"\n\nPosts encontrados:",
-	posts.map((p) => p.id),
-);
-
-const post = posts.find((p) => p.id === "petropolis");
-
-if (!post) {
-	throw new Error("\n\nPost não encontrado\n\n");
-}
-
-const { Content } = await render(post);
-const { data } = post;
-
-const url_hotel_map = "https://maps.app.goo.gl/NDei3sMZ7Sp9s2Cd8";
+const trips = await getCollection("viagem");
 ---
 
-<BaseLayout title={data.title}>
-	<!-- Este script cria a ponte entre o botão e o navegador -->
-	<script is:inline define:vars={{ url_hotel_map }}>
-		window.abrirNoMaps = () => {
-			window.open(url_hotel_map, "_blank");
-		};
-
-		window.abrirSiteHotel = () => {
-			window.open(
-				"https://www.kastelhoteis.com.br/hoteis-e-pousadas/kastel-petropolis",
-				"_blank",
-			);
-		};
-
-		window.abrirRestaurantes = () => {
-			window.open(
-				"https://soupetropolis.com/2021/06/19/7-restaurantes-para-comer-um-bom-fondue-em-petropolis/",
-				"_blank",
-			);
-		};
-	</script>
-
-	<Toast />
+<BaseLayout title="Meus Roteiros de Viagem">
 	<Navbar />
+	
+	<main class="max-w-6xl mx-auto py-20 px-4">
+		<h1 class="text-4xl font-bold mb-10 text-center text-gray-800">
+			Explore Meus Roteiros
+		</h1>
 
-	<Hero images={data.images} />
-
-	<main class="max-w-6xl mx-auto pb-24">
-		<InfoCards logistics={data.logistics} base={data.base} />
-
-		<ItinerarySection days={data.days} />
-
-		<InsightSection>
-			<Content />
-		</InsightSection>
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{trips.map((trip) => (
+				<a 
+					href={`/viagem/${trip.id}`}
+					class="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+				>
+					<div class="relative h-48 overflow-hidden">
+						<img 
+							src={trip.data.images[0]} 
+							alt={trip.data.title}
+							class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+						/>
+						<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+					</div>
+					
+					<div class="p-6">
+						<h2 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+							{trip.data.destination}
+						</h2>
+						<p class="text-gray-600 text-sm line-clamp-2">
+							{trip.data.title}
+						</p>
+						<div class="mt-4 flex items-center text-blue-500 font-semibold text-sm">
+							Ver roteiro completo 
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 5l7 7-7 7" />
+							</svg>
+						</div>
+					</div>
+				</a>
+			))}
+		</div>
 	</main>
 </BaseLayout>

@@ -27,6 +27,11 @@ const viagem = defineCollection({
             })),
         })),
         images: z.array(z.string()),
+        links: z.object({
+            maps: z.string().optional(),
+            hotel: z.string().optional(),
+            extra: z.string().optional(),
+        }).optional(),
     }),
 });
 
