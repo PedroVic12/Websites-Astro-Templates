@@ -51,7 +51,7 @@ days:
     events:
       - time: "05h00"
         desc: "Ida para Campo Grande de Barcas e Frescão"
-        icon: "✈️
+        icon: "✈️"
       - time: "08h00"
         desc: "Café da manhã na casa da Dona Eliete"
         icon: "☕"
