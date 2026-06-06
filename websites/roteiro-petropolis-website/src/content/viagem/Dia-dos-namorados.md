@@ -49,7 +49,6 @@ days:
     title: "(12/06 — Sexta): DIA DOS NAMORADOS 🎉"
     focus: "Jantar Romântico em Campo Grande (Pós-Trabalho)"
     events:
-
       - time: "05h00"
         desc: "Ida para Campo Grande de Barcas e Frescão"
         icon: "✈️
