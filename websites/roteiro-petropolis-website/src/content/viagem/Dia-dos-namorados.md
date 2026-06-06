@@ -67,7 +67,7 @@ days:
 
 
   - day: 3
-    title: "(13/06 — Sábado): Lagoa + Jogo do Brasil ⚽"
+    title: "(13/06 — Sábado): Passeio no RJ + Jogo do Brasil ⚽"
     focus: "Manhã no Rio e Noite de Torcida"
     events:
       - time: "08h30"
