@@ -6,45 +6,58 @@ import Navbar from "../components/Navbar.astro";
 const trips = await getCollection("viagem");
 ---
 
-<BaseLayout title="Meus Roteiros de Viagem">
+<BaseLayout title="Meus Roteiros de Viagem usando Astro e Javascript">
 	<Navbar />
-	
+
 	<main class="max-w-6xl mx-auto py-20 px-4">
 		<h1 class="text-4xl font-bold mb-10 text-center text-gray-800">
 			Explore Meus Roteiros
 		</h1>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-			{trips.map((trip) => (
-				<a 
-					href={`/viagem/${trip.id}`}
-					class="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-				>
-					<div class="relative h-48 overflow-hidden">
-						<img 
-							src={trip.data.images[0]} 
-							alt={trip.data.title}
-							class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-						/>
-						<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-					</div>
-					
-					<div class="p-6">
-						<h2 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
-							{trip.data.destination}
-						</h2>
-						<p class="text-gray-600 text-sm line-clamp-2">
-							{trip.data.title}
-						</p>
-						<div class="mt-4 flex items-center text-blue-500 font-semibold text-sm">
-							Ver roteiro completo 
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 5l7 7-7 7" />
-							</svg>
+			{
+				trips.map((trip) => (
+					<a
+						href={`/viagem/${trip.id}`}
+						class="group block bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+					>
+						<div class="relative h-48 overflow-hidden">
+							<img
+								src={trip.data.images[0]}
+								alt={trip.data.title}
+								class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+							/>
+							<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
 						</div>
-					</div>
-				</a>
-			))}
+
+						<div class="p-6">
+							<h2 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+								{trip.data.destination}
+							</h2>
+							<p class="text-gray-600 text-sm line-clamp-2">
+								{trip.data.title}
+							</p>
+							<div class="mt-4 flex items-center text-blue-500 font-semibold text-sm">
+								Ver roteiro completo
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="9 5l7 7-7 7"
+									/>
+								</svg>
+							</div>
+						</div>
+					</a>
+				))
+			}
 		</div>
 	</main>
 </BaseLayout>

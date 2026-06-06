@@ -80,5 +80,4 @@ days:
 
 images:
   - "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1000&auto=format&fit=crop"
-  - "https://images.unsplash.com/photo-1485871901521-5b1fd3905e0c?q=80&w=1000&auto=format&fit=crop"
 ---

@@ -5,12 +5,15 @@ Este é um template padronizado para a criação de roteiros de viagem dinâmico
 ## 🚀 Como Instalar
 
 ### 1. Requisitos Próvios
+
 Certifique-se de que seu projeto tem o Tailwind CSS instalado:
+
 ```bash
 npx astro add tailwind
 ```
 
 ### 2. Copiando o Template
+
 Basta copiar a pasta `astro-tailwind` para dentro do seu diretório de componentes:
 `src/components/templates/astro-tailwind/`
 
@@ -20,7 +23,8 @@ Basta copiar a pasta `astro-tailwind` para dentro do seu diretório de component
 
 O template utiliza o componente mestre `TravelPage.astro`. Ele centraliza toda a lógica e layout.
 
-### Exemplo de implementação em uma rota dinâmica:
+### Exemplo de implementação em uma rota dinâmica
+
 Crie o arquivo `src/pages/viagem/[slug].astro`:
 
 ```astro
@@ -49,8 +53,9 @@ const { Content } = await render(post);
 
 Para usar no Next.js, você precisará converter os arquivos `.astro` para `.tsx`.
 
-### Passos para Conversão:
-1. **Props:** No Astro usamos `Astro.props`. No React, passe as props como argumentos da função: 
+### Passos para Conversão
+
+1. **Props:** No Astro usamos `Astro.props`. No React, passe as props como argumentos da função:
    `export const Hero = ({ images }) => { ... }`
 2. **Scripts:** A lógica dentro das tags `<script>` do Astro deve ser movida para hooks `useEffect` ou `useState` no React.
 3. **Imagens:** Substitua as tags `<img>` pelo componente `next/image` se estiver usando Next.js para otimização automática.
@@ -78,15 +83,19 @@ Como este template usa **Tailwind CSS** e **Scripts Inline**, ele é extremament
 ---
 
 ## 🎨 Customização de Cores
-O template utiliza predominantemente as cores `orange-500` (#ff9800) e `gray-900`. 
+
+O template utiliza predominantemente as cores `orange-500` (#ff9800) e `gray-900`.
 Para mudar a identidade visual, você pode:
+
 1. Fazer um *find and replace* no VS Code de `orange-500` para a sua cor desejada (ex: `blue-500`).
 2. Ou configurar o `tailwind.config.mjs` para mapear essas cores para variáveis de tema.
 
 ---
 
 ## 📝 Regras do Roteiro (.md)
+
 Para o template funcionar perfeitamente, seu arquivo Markdown deve conter no mínimo:
+
 - `title`: Título da viagem.
 - `days`: Lista de objetos com `day`, `title`, `focus` e `events`.
 - **Duração mínima recomendada:** 4 dias para preencher bem o layout.

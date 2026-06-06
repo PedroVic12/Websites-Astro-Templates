@@ -78,6 +78,6 @@ days:
         icon: "🚗"
 
 images:
-  - "https://images.unsplash.com/photo-1582650809223-9366e4450370?q=80&w=1000&auto=format&fit=crop"
-  - "https://images.unsplash.com/photo-1549221541-f76274094191?q=80&w=1000&auto=format&fit=crop"
+  - "/campos-do-jordao.jpg"
+
 ---

@@ -14,6 +14,8 @@ interface Props {
 
 const { data, Content } = Astro.props;
 
+const isPetropolis = data.destination.toLowerCase().includes("petropolis");
+
 const url_maps = data.links?.maps || "#";
 const url_hotel = data.links?.hotel || "#";
 ---
@@ -30,7 +32,9 @@ const url_hotel = data.links?.hotel || "#";
 </script>
 
 <!-- Fundo Dark Futurista: Preto com nuances de Roxo e Azul -->
-<div class="template-viagem-v1 font-sans antialiased text-gray-100 bg-[#050505] bg-gradient-to-br from-black via-[#0a051a] to-[#050a1a] min-h-screen">
+<div
+	class="template-viagem-v1 font-sans antialiased text-gray-100 bg-[#050505] bg-gradient-to-br from-black via-[#0a051a] to-[#050a1a] min-h-screen"
+>
 	<Toast />
 	<Navbar />
 
@@ -38,13 +42,14 @@ const url_hotel = data.links?.hotel || "#";
 
 	<main class="max-w-6xl mx-auto pb-24 px-4">
 		<InfoCards logistics={data.logistics} base={data.base} />
-		
+
 		<div class="mt-20">
 			<ItinerarySection days={data.days} />
 		</div>
-		
-		<InsightSection>
+
+		<!-- Texto de GPT em markdown para website -->
+		<!-- 		<InsightSection>
 			<Content />
-		</InsightSection>
+		</InsightSection> -->
 	</main>
 </div>

@@ -29,28 +29,32 @@ const { logistics, base } = Astro.props;
         </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ImageContainer
-            titulo="Transporte"
-            descricao="Localização estratégica no centro para os passeios."
-            img_url={img_url_bus.src}
-            img_height="500px"
-        />
-    </div>
+    <!-- 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ImageContainer
+                titulo="Transporte"
+                descricao="Localização estratégica no centro para os passeios."
+                img_url={img_url_bus.src}
+                img_height="500px"
+            />
+        </div>
+    -->
 
     <div
         class="bg-[#1e1e1e] border border-gray-800 p-6 rounded-2xl shadow-xl shadow-black/50 hover:border-cyan-500/50 transition-colors"
     >
         <div class="flex items-center gap-3 mb-4 text-[#00bcd4]">
             <span class="text-3xl">🏨</span>
-            <h2 class="text-xl font-bold text-white">Hospedagem</h2>
+            <h2 class="text-xl font-bold text-white">Cidade</h2>
         </div>
+
         <p class="text-gray-300">
             <strong class="text-[#00bcd4] block mb-2 text-lg">{base}</strong>
-            Café da manhã incluso e fácil acesso às principais atrações.
         </p>
 
-        <ButtonTailwind titulo="Site do Hotel" onClick="abrirSiteHotel" />
+        <!--         Café da manhã incluso e fácil acesso às principais atrações.
+
+        <ButtonTailwind titulo="Site do Hotel" onClick="abrirSiteHotel" /> -->
     </div>
 
     <div
@@ -69,11 +73,5 @@ const { logistics, base } = Astro.props;
                 ))
             }
         </div>
-
-        <ImageContainer
-            titulo="Restaurantes"
-            descricao="Opções locais selecionadas."
-            img_url={img_url_restaurantes.src}
-        />
     </div>
 </div>
